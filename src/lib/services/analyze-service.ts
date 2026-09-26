@@ -1,5 +1,6 @@
 import type { AIManager } from "@/lib/ai/ai-manager";
 import { computeBalance } from "@/lib/analysis/balance-score";
+import { analysisCache, analysisCacheKey } from "@/lib/cache/analysis-cache";
 import { createEvidenceVerifier, verifyItems } from "@/lib/analysis/evidence-verifier";
 import { MODEL_CONTEXT_CHAR_BUDGET } from "@/lib/constants";
 import { buildAnalyzePrompt } from "@/lib/prompts/analyze";
@@ -18,7 +19,8 @@ const SEVERITY_ORDER: Record<Severity, number> = { HIGH: 0, MEDIUM: 1, LOW: 2, I
 
 /**
  * Runs the full analysis pipeline: redact PII, count injection attempts, bound the context,
- * make one model call, restore PII, verify every quote, and score balance deterministically.
+ * make one model call (skipped when the same redacted text was analysed recently), restore
+ * PII, verify every quote, and score balance deterministically.
  * @param text - original document text (never stored).
  * @param options - output language and reading level.
  * @param manager - AI manager used for the single consolidated call.
@@ -38,10 +40,15 @@ export async function analyzeDocument(
   const bounded = truncateMiddle(redaction.text, MODEL_CONTEXT_CHAR_BUDGET);
 
   onStage("analyzing");
-  const raw = await manager.generate({
-    ...buildAnalyzePrompt(bounded.text, options),
-    schema: AnalysisModelOutputSchema,
-  });
+  const cacheKey = analysisCacheKey(bounded.text, options);
+  let raw = analysisCache.get(cacheKey);
+  if (!raw) {
+    raw = await manager.generate({
+      ...buildAnalyzePrompt(bounded.text, options),
+      schema: AnalysisModelOutputSchema,
+    });
+    analysisCache.set(cacheKey, raw);
+  }
 
   onStage("verifying");
   const output = restorePiiDeep(raw, redaction.tokens);

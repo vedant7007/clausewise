@@ -1,4 +1,5 @@
 import type { AnalysisModelOutput } from "@/lib/schemas/analysis";
+import { analysisCache } from "@/lib/cache/analysis-cache";
 import { analyzeDocument } from "@/lib/services/analyze-service";
 import { fakeManager } from "../../helpers/fixtures";
 
@@ -86,6 +87,8 @@ function modelOutput(): AnalysisModelOutput {
   };
 }
 
+beforeEach(() => analysisCache.clear());
+
 describe("analyzeDocument", () => {
   it("redacts PII before the model call and restores it in the result", async () => {
     const { manager, generate } = fakeManager(modelOutput());
@@ -151,5 +154,24 @@ describe("analyzeDocument", () => {
     const prompt = generate.mock.calls[0]![0].prompt as string;
     expect(prompt).toContain("Telugu");
     expect(prompt).toContain("5th-grade");
+  });
+});
+
+describe("analysis cache", () => {
+  it("serves an identical re-analysis without calling the model again", async () => {
+    const { manager, generate } = fakeManager(modelOutput());
+    const options = { language: "en", plainLanguage: false } as const;
+    const first = await analyzeDocument(DOCUMENT, options, manager);
+    const second = await analyzeDocument(DOCUMENT, options, manager);
+    expect(generate).toHaveBeenCalledTimes(1);
+    expect(second).toEqual(first);
+    expect(second.brief.summary).toContain("tenant@example.com");
+  });
+
+  it("calls the model again when the output options differ", async () => {
+    const { manager, generate } = fakeManager(modelOutput(), modelOutput());
+    await analyzeDocument(DOCUMENT, { language: "en", plainLanguage: false }, manager);
+    await analyzeDocument(DOCUMENT, { language: "hi", plainLanguage: false }, manager);
+    expect(generate).toHaveBeenCalledTimes(2);
   });
 });

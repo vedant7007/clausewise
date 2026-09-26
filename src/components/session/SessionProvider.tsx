@@ -20,9 +20,16 @@ const SessionContext = createContext<SessionContextValue | null>(null);
 /**
  * Keeps the analysed document in React state so Q&A, compare and prep pages can reuse it.
  * Nothing is written to storage; closing or reloading the tab clears it.
+ * @param initialSession - optional starting session, used when rendering views in isolation.
  */
-export function SessionProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
+export function SessionProvider({
+  children,
+  initialSession = null,
+}: {
+  children: ReactNode;
+  initialSession?: Session | null;
+}) {
+  const [session, setSession] = useState<Session | null>(initialSession);
   const value = useMemo(() => ({ session, setSession }), [session]);
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
 }

@@ -70,7 +70,7 @@ const HTTP_SERVER_ERROR = 500;
 export function kindFromStatus(status: number, body = ""): ProviderFailureKind {
   if (status === HTTP_UNAUTHORIZED || status === HTTP_FORBIDDEN) return "auth";
   if (status === HTTP_TOO_MANY_REQUESTS) {
-    return /quota|billing|exceeded your current/i.test(body) ? "quota" : "rate_limit";
+    return /billing|per.?day|daily/i.test(body) ? "quota" : "rate_limit";
   }
   if (status >= HTTP_SERVER_ERROR) return "server";
   return "bad_request";

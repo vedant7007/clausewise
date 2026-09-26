@@ -21,7 +21,8 @@ describe("kindFromStatus", () => {
     expect(kindFromStatus(401)).toBe("auth");
     expect(kindFromStatus(403)).toBe("auth");
     expect(kindFromStatus(429, "Too many requests")).toBe("rate_limit");
-    expect(kindFromStatus(429, "You exceeded your current quota")).toBe("quota");
+    expect(kindFromStatus(429, "You exceeded your current quota, retry in 12s")).toBe("rate_limit");
+    expect(kindFromStatus(429, "Quota exceeded: requests per day")).toBe("quota");
     expect(kindFromStatus(503)).toBe("server");
     expect(kindFromStatus(400)).toBe("bad_request");
   });
@@ -35,7 +36,7 @@ describe("toProviderError", () => {
   });
 
   it("reads a status from SDK errors", () => {
-    const error = Object.assign(new Error("quota exceeded"), { status: 429 });
+    const error = Object.assign(new Error("daily quota exceeded"), { status: 429 });
     expect(toProviderError(error, new AbortController().signal).kind).toBe("quota");
   });
 

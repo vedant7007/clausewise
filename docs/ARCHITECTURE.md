@@ -101,8 +101,8 @@ explanatory verdict rather than a misleading number.
 ## AI layer
 
 `AIProvider` is a two-method interface: `generateJson` and `ping`. `GeminiProvider` streams output
-with a response JSON Schema; `GroqProvider` uses JSON-object mode with the schema embedded in the
-system message. `providersFromEnv` builds the fallback chain: `GEMINI_MODEL`, then each of
+with a response JSON Schema; `GroqProvider` sends the same schema as a structured-output `json_schema`
+response format with an explicit completion budget. `providersFromEnv` builds the fallback chain: `GEMINI_MODEL`, then each of
 `GEMINI_FALLBACK_MODELS`, then Groq. Free-tier quotas are per model, so the chain keeps the service
 up when one model's daily quota is spent.
 

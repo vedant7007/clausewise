@@ -161,19 +161,42 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full design.
 All calls go through [`AIManager`](src/lib/ai/ai-manager.ts), which sends a structural JSON Schema
 generated from the Zod output schema and validates every response with `safeParse`.
 
-| Provider and model                                                                               | Role                                                                         | Feature it powers                                                                   | Files                                                                                                                            |
-| ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| Google Gemini **`gemini-2.5-flash`** (via `@google/genai`, JSON mode, streamed)                  | Primary model (`GEMINI_MODEL`)                                               | Brief, clause ledger, risks, obligations and prep pack in **one** consolidated call | [`prompts/analyze.ts`](src/lib/prompts/analyze.ts), [`services/analyze-service.ts`](src/lib/services/analyze-service.ts)         |
-| Same                                                                                             | Primary model                                                                | Grounded Q&A                                                                        | [`prompts/ask.ts`](src/lib/prompts/ask.ts), [`services/ask-service.ts`](src/lib/services/ask-service.ts)                         |
-| Same                                                                                             | Primary model                                                                | Compare mode and fair-baseline comparison                                           | [`prompts/compare.ts`](src/lib/prompts/compare.ts), [`services/compare-service.ts`](src/lib/services/compare-service.ts)         |
-| Same                                                                                             | Primary model                                                                | Negotiation Kit                                                                     | [`prompts/negotiate.ts`](src/lib/prompts/negotiate.ts), [`services/negotiate-service.ts`](src/lib/services/negotiate-service.ts) |
-| Gemini **`gemini-3-flash-preview`**, **`gemini-3.1-flash-lite`**, **`gemini-flash-lite-latest`** | Fallback chain (`GEMINI_FALLBACK_MODELS`), each with its own free-tier quota | All of the above, when the primary is out of quota or unavailable                   | [`ai/index.ts`](src/lib/ai/index.ts), [`ai/gemini-provider.ts`](src/lib/ai/gemini-provider.ts)                                   |
-| Groq **`llama-3.3-70b-versatile`** (OpenAI-compatible API, JSON mode)                            | Optional final fallback, enabled only when `GROQ_API_KEY` is set             | All of the above                                                                    | [`ai/groq-provider.ts`](src/lib/ai/groq-provider.ts)                                                                             |
+| Provider and model                                                                                    | Role                                                                         | Feature it powers                                                                   | Files                                                                                                                            |
+| ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Google Gemini **`gemini-2.5-flash`** (via `@google/genai`, JSON mode, streamed)                       | Primary model (`GEMINI_MODEL`)                                               | Brief, clause ledger, risks, obligations and prep pack in **one** consolidated call | [`prompts/analyze.ts`](src/lib/prompts/analyze.ts), [`services/analyze-service.ts`](src/lib/services/analyze-service.ts)         |
+| Same                                                                                                  | Primary model                                                                | Grounded Q&A                                                                        | [`prompts/ask.ts`](src/lib/prompts/ask.ts), [`services/ask-service.ts`](src/lib/services/ask-service.ts)                         |
+| Same                                                                                                  | Primary model                                                                | Compare mode and fair-baseline comparison                                           | [`prompts/compare.ts`](src/lib/prompts/compare.ts), [`services/compare-service.ts`](src/lib/services/compare-service.ts)         |
+| Same                                                                                                  | Primary model                                                                | Negotiation Kit                                                                     | [`prompts/negotiate.ts`](src/lib/prompts/negotiate.ts), [`services/negotiate-service.ts`](src/lib/services/negotiate-service.ts) |
+| Gemini **`gemini-3-flash-preview`**, **`gemini-3.1-flash-lite`**, **`gemini-flash-lite-latest`**      | Fallback chain (`GEMINI_FALLBACK_MODELS`), each with its own free-tier quota | All of the above, when the primary is out of quota or unavailable                   | [`ai/index.ts`](src/lib/ai/index.ts), [`ai/gemini-provider.ts`](src/lib/ai/gemini-provider.ts)                                   |
+| Groq, OpenAI's 120B open-weight model (set by `GROQ_MODEL`; structured outputs, low reasoning effort) | Final fallback, enabled only when `GROQ_API_KEY` is set                      | All of the above, when every Gemini model is unavailable                            | [`ai/groq-provider.ts`](src/lib/ai/groq-provider.ts)                                                                             |
 
 The primary model was verified against the deployment key during setup: it lists as available and
 returns schema-constrained JSON. What the model **does not** do: compute the balance score, decide
 whether a quote is real, choose what personal data to hide, or sort risks. Those are deterministic
 TypeScript.
+
+### Reliability and quota handling
+
+Free model tiers run out, and a legal tool that fails at the moment someone needs it is not
+accessible. ClauseWise is engineered to degrade in steps rather than fall over:
+
+1. **Resilient calls.** Every call has a 25 s idle timeout and a 90 s cap. Rate limits, timeouts and
+   5xx errors are retried twice with exponential backoff and jitter; auth errors and spent daily
+   quotas skip straight to the next provider.
+2. **Per-model Gemini fallbacks.** Gemini free-tier quotas are counted per model, so
+   `GEMINI_FALLBACK_MODELS` chains several models, each with its own allowance.
+3. **Groq as the final, independent fallback.** A different vendor on different infrastructure,
+   called with structured outputs and an explicit completion budget sized to fit its free tier.
+4. **Same standard, whoever answers.** Every provider's output passes the same Zod validation, PII
+   restoration and quote verification, so a fallback answer is never less grounded.
+5. **Sample safety net.** If every provider is unavailable, the bundled samples show a saved
+   analysis from the same pipeline, clearly labelled. User documents never fall back to fixtures.
+
+Each failure and each fallback-served request is logged server-side with its provider and model,
+and never exposed to the client. **Verified on a live deployment:** with Gemini forced into a real
+quota error (HTTP 429, free-tier daily limit), a pasted employment offer was analysed live by the
+Groq fallback in 16 seconds: 12 clauses, 6 risks, 7 obligations and 25 of 27 claims verified, with
+source `live` and the server log recording `served by fallback groq:…`.
 
 ## Rubric mapping
 
@@ -183,7 +206,7 @@ TypeScript.
 | **Code quality**                | Strict TypeScript with `noUncheckedIndexedAccess`, zero `any`, Zod as the single source of truth for types, thin route handlers over services, one `AppError` type, JSDoc on exported functions, named constants, small single-purpose files, CI on every push.                                                                                          | [`tsconfig.json`](tsconfig.json), [`eslint.config.mjs`](eslint.config.mjs), [`lib/schemas`](src/lib/schemas), [`lib/errors.ts`](src/lib/errors.ts), [`lib/http/model-route.ts`](src/lib/http/model-route.ts), [`.github/workflows/ci.yml`](.github/workflows/ci.yml) |
 | **Security**                    | PII redaction before inference; prompt-injection defence with an instruction hierarchy, fenced untrusted content and detection counts; magic-byte, MIME, extension and size validation; per-IP rate limiting with `Retry-After`; CSP and hardening headers; keys server-only; no stack traces or provider details reach the client; no document storage. | [`security/`](src/lib/security), [`parsers/`](src/lib/parsers), [`http/responses.ts`](src/lib/http/responses.ts), [`next.config.ts`](next.config.ts), [SECURITY.md](SECURITY.md)                                                                                     |
 | **Efficiency**                  | One consolidated analysis call; streamed staged progress; bounded context with head-and-tail truncation; minimal model thinking; per-model fallback instead of failure; `next/dynamic` for compare and prep; `next/font`; server components by default; memoised derived values.                                                                         | [`analyze-service.ts`](src/lib/services/analyze-service.ts), [`utils/text.ts`](src/lib/utils/text.ts), [`http/ndjson.ts`](src/lib/http/ndjson.ts), [`app/compare/page.tsx`](src/app/compare/page.tsx)                                                                |
-| **Testing**                     | 196 tests across 23 files: unit tests for every core library, service tests with a fake model, HTTP and client tests, and component tests with an axe assertion; coverage thresholds enforced in CI.                                                                                                                                                     | [`tests/`](tests), [`vitest.config.mts`](vitest.config.mts)                                                                                                                                                                                                          |
+| **Testing**                     | 198 tests across 23 files: unit tests for every core library, service tests with a fake model, HTTP and client tests, and component tests with an axe assertion; coverage thresholds enforced in CI.                                                                                                                                                     | [`tests/`](tests), [`vitest.config.mts`](vitest.config.mts)                                                                                                                                                                                                          |
 | **Accessibility**               | WCAG 2.1 AA: skip link, landmarks, one `h1` per page, visible focus rings, 44 px targets, ARIA tabs with keyboard support, native `details` and `dialog`, live regions for async results, labelled controls, reduced motion, dark mode, and meaning never carried by colour alone.                                                                       | [`components/ui`](src/components/ui), [`components/layout`](src/components/layout), [`tests/components`](tests/components), [Accessibility](#accessibility)                                                                                                          |
 
 ## Getting started
@@ -210,20 +233,21 @@ npm run dev                     # http://localhost:3000
 
 ## Environment variables
 
-| Variable                 | Required            | Description                                                                                                                    |
-| ------------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `GEMINI_API_KEY`         | One of the two keys | Google Gemini API key. Server-side only.                                                                                       |
-| `GEMINI_MODEL`           | No                  | Primary Gemini model. Defaults to `gemini-2.5-flash`.                                                                          |
-| `GEMINI_FALLBACK_MODELS` | No                  | Comma-separated Gemini models tried in order if the primary fails, for example `gemini-3-flash-preview,gemini-3.1-flash-lite`. |
-| `GROQ_API_KEY`           | One of the two keys | Groq API key. Used as primary if it is the only key, otherwise as the last fallback.                                           |
-| `GROQ_MODEL`             | No                  | Groq model. Defaults to `llama-3.3-70b-versatile`.                                                                             |
+| Variable                 | Required            | Description                                                                                                                                                                           |
+| ------------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GEMINI_API_KEY`         | One of the two keys | Google Gemini API key. Server-side only.                                                                                                                                              |
+| `GEMINI_MODEL`           | No                  | Primary Gemini model. Defaults to `gemini-2.5-flash`.                                                                                                                                 |
+| `GEMINI_FALLBACK_MODELS` | No                  | Comma-separated Gemini models tried in order if the primary fails, for example `gemini-3-flash-preview,gemini-3.1-flash-lite`.                                                        |
+| `GROQ_API_KEY`           | One of the two keys | Groq API key. Used as primary if it is the only key, otherwise as the last fallback.                                                                                                  |
+| `GROQ_MODEL`             | No                  | Groq model, chosen from the models the key can use. Defaults to `qwen/qwen3.8-27b`; production uses OpenAI's 120B open-weight model, which fits a full analysis within the free tier. |
+| `GROQ_REASONING_EFFORT`  | No                  | `low`, `medium` or `high` for Groq reasoning models. Production uses `low`, leaving the completion budget for the answer.                                                             |
 
 No variable is exposed to the browser; there are no `NEXT_PUBLIC_` secrets.
 
 ## Testing
 
 ```bash
-npm run test            # 196 tests
+npm run test            # 198 tests
 npm run test:coverage   # with thresholds: lines 70, functions 70, statements 70, branches 60
 ```
 
@@ -231,7 +255,7 @@ Current coverage (`src/lib` and `src/components`):
 
 | Statements | Branches | Functions | Lines  |
 | ---------- | -------- | --------- | ------ |
-| 86.07%     | 75.04%   | 84.64%    | 87.23% |
+| 86.05%     | 74.85%   | 84.32%    | 87.18% |
 
 Highlights: the evidence verifier (exact match, whitespace and case normalisation, fabricated and
 partial quotes rejected, offsets), balance scoring (weights, clamping, empty, all-favourable,

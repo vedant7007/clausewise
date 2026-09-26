@@ -83,3 +83,42 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+@media print {
+  @page {
+    margin: 18mm 16mm;
+  }
+
+  :root {
+    --paper: #ffffff;
+    --surface: #ffffff;
+    --ink: #000000;
+    --muted: #333333;
+    --line: #999999;
+  }
+
+  body {
+    font-size: 11pt;
+    background: #ffffff;
+  }
+
+  main {
+    padding: 0 !important;
+    max-width: none !important;
+  }
+
+  .prep-section {
+    break-inside: avoid-page;
+  }
+
+  h1,
+  h2,
+  h3 {
+    break-after: avoid-page;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}

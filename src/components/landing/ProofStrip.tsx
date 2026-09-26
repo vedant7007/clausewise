@@ -13,7 +13,7 @@ const FACTS: readonly { value: string; label: string }[] = [
 /** A strip of true, code-derived facts about what ClauseWise does. */
 export function ProofStrip() {
   return (
-    <section aria-label="ClauseWise at a glance" className="reveal">
+    <section aria-label="ClauseWise at a glance" className="reveal sm:-mt-12">
       <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line lg:grid-cols-5">
         {FACTS.map((fact) => (
           <div

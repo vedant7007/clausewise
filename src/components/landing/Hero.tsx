@@ -7,7 +7,7 @@ export function Hero() {
   return (
     <section
       aria-labelledby="hero-heading"
-      className="grid gap-10 pt-6 sm:pt-12 lg:grid-cols-[1.25fr_1fr] lg:items-center"
+      className="grid gap-10 pt-4 sm:pt-6 lg:grid-cols-[1.25fr_1fr] lg:items-center"
     >
       <div className="space-y-7">
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">

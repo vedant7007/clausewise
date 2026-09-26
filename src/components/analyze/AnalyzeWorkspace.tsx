@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/Button";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { OutputOptionsControls } from "@/components/ui/OutputOptionsControls";
 import { type AnalysisSource, useAnalysis } from "@/hooks/use-analysis";
-import { type OutputOptions, SampleIdSchema } from "@/lib/schemas/document";
+import { toSampleId } from "@/data/sample-catalog";
+import type { OutputOptions } from "@/lib/schemas/document";
 import { AnalysisResults } from "./AnalysisResults";
 import { DocumentPicker } from "./DocumentPicker";
 
@@ -31,10 +32,10 @@ export function AnalyzeWorkspace() {
   const autoStarted = useRef(false);
 
   useEffect(() => {
-    const sample = SampleIdSchema.safeParse(searchParams.get("sample"));
-    if (!sample.success || autoStarted.current) return;
+    const sampleId = toSampleId(searchParams.get("sample"));
+    if (!sampleId || autoStarted.current) return;
     autoStarted.current = true;
-    void run({ kind: "sample", sampleId: sample.data }, DEFAULT_OPTIONS);
+    void run({ kind: "sample", sampleId }, DEFAULT_OPTIONS);
   }, [searchParams, run]);
 
   if (status.state === "running") return <StageProgress stage={status.stage} />;

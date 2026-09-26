@@ -26,3 +26,13 @@ export const SAMPLE_CATALOG: readonly {
     description: "A 'mutual' NDA that binds only one side, with a hidden instruction inside.",
   },
 ];
+
+/**
+ * Narrows an untrusted string to a bundled sample id without pulling a validation library into
+ * the browser bundle.
+ * @param value - for example a URL parameter or a detected document type.
+ * @returns the matching sample id, or undefined.
+ */
+export function toSampleId(value: string | null | undefined): SampleId | undefined {
+  return SAMPLE_CATALOG.find((sample) => sample.id === value)?.id;
+}

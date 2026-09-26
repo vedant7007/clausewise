@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/Button";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { OutputOptionsControls } from "@/components/ui/OutputOptionsControls";
 import { Spinner } from "@/components/ui/Spinner";
-import { SAMPLE_CATALOG } from "@/data/sample-catalog";
+import { SAMPLE_CATALOG, toSampleId } from "@/data/sample-catalog";
 import { ClientError, postJson } from "@/lib/client/api-client";
 import type { CompareResult } from "@/lib/schemas/compare";
-import { type OutputOptions, type SampleId, SampleIdSchema } from "@/lib/schemas/document";
+import type { OutputOptions, SampleId } from "@/lib/schemas/document";
 import { pluralize } from "@/lib/utils/format";
 import { DifferenceCard } from "./DifferenceCard";
 import { DocumentSlot, type NamedText } from "./DocumentSlot";
@@ -21,10 +21,10 @@ type Mode = "baseline" | "document";
 /** Side-by-side comparison of two documents, or of one document against a fair baseline. */
 export function CompareView() {
   const { session } = useSession();
-  const detected = SampleIdSchema.safeParse(session?.result.brief.documentType);
+  const detected = toSampleId(session?.result.brief.documentType);
   const [left, setLeft] = useState<NamedText | null>(session ? session.document : null);
   const [mode, setMode] = useState<Mode>("baseline");
-  const [baseline, setBaseline] = useState<SampleId>(detected.success ? detected.data : "rental");
+  const [baseline, setBaseline] = useState<SampleId>(detected ?? "rental");
   const [right, setRight] = useState<NamedText | null>(null);
   const [options, setOptions] = useState<OutputOptions>({ language: "en", plainLanguage: false });
   const [pending, setPending] = useState(false);

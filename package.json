@@ -2,6 +2,21 @@
   "name": "clausewise",
   "version": "0.1.0",
   "private": true,
+  "description": "Understand what you are signing: plain-English legal document analysis with clause tilt scoring and verified evidence.",
+  "homepage": "https://clausewise-lovat.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vedant7007/clausewise.git"
+  },
+  "license": "MIT",
+  "keywords": [
+    "legal-tech",
+    "genai",
+    "nextjs",
+    "typescript",
+    "accessibility",
+    "gemini"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",

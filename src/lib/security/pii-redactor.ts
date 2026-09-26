@@ -25,33 +25,61 @@ export interface Redaction {
   count: number;
 }
 
+/** Redacts several texts with one shared token map, so tokens never collide across texts. */
+export interface Redactor {
+  /** Masks one text, continuing the shared numbering. */
+  redact(text: string): string;
+  /** token → original value, across every text redacted so far */
+  readonly tokens: ReadonlyMap<string, string>;
+  /** personal details masked so far, counting repeats */
+  readonly count: number;
+}
+
 /**
- * Masks emails, phone numbers, Aadhaar-like and PAN-like identifiers, and long digit runs
- * such as account numbers. The same value always receives the same token.
- * @param text - document text or a user question.
- * @returns masked text and a reversible token map.
+ * Creates a redactor for one request. Masks emails, phone numbers, Aadhaar-like and PAN-like
+ * identifiers, and long digit runs such as account numbers. A value always gets one token.
  */
-export function redactPii(text: string): Redaction {
+export function createRedactor(): Redactor {
   const tokens = new Map<string, string>();
   const byValue = new Map<string, string>();
   const counters = new Map<PiiKind, number>();
   let count = 0;
-  let masked = text;
 
-  for (const { kind, pattern } of PII_PATTERNS) {
-    masked = masked.replace(pattern, (value) => {
-      count += 1;
-      const existing = byValue.get(value);
-      if (existing) return existing;
-      const next = (counters.get(kind) ?? 0) + 1;
-      counters.set(kind, next);
-      const token = `[${kind}_${next}]`;
-      tokens.set(token, value);
-      byValue.set(value, token);
-      return token;
-    });
-  }
-  return { text: masked, tokens, count };
+  const redact = (text: string): string =>
+    PII_PATTERNS.reduce(
+      (masked, { kind, pattern }) =>
+        masked.replace(pattern, (value) => {
+          count += 1;
+          const existing = byValue.get(value);
+          if (existing) return existing;
+          const next = (counters.get(kind) ?? 0) + 1;
+          counters.set(kind, next);
+          const token = `[${kind}_${next}]`;
+          tokens.set(token, value);
+          byValue.set(value, token);
+          return token;
+        }),
+      text,
+    );
+
+  return {
+    redact,
+    tokens,
+    get count() {
+      return count;
+    },
+  };
+}
+
+/**
+ * Redacts a single text.
+ * @param text - document text or a user question.
+ * @returns masked text and a reversible token map.
+ */
+export function redactPii(text: string): Redaction {
+  const redactor = createRedactor();
+  const masked = redactor.redact(text);
+  return { text: masked, tokens: redactor.tokens, count: redactor.count };
 }
 
 /**

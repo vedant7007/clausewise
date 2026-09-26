@@ -1,0 +1,418 @@
+{
+  "brief": {
+    "documentType": "employment",
+    "title": "Offer of Employment and Terms of Service",
+    "userParty": "Employee",
+    "summary": "This document is an offer of employment from Brightwave Analytics Private Limited to Karthik Iyer for the position of Software Engineer II. It outlines the terms of employment, including start date, compensation, probation, and various obligations like confidentiality, intellectual property, and non-compete clauses. It also details conditions for bonuses, training bonds, and termination. The offer requires acceptance by August 20, 2026.",
+    "purpose": "This document serves as a formal offer of employment and sets out the complete terms and conditions that will govern the employment relationship between Brightwave Analytics Private Limited and Karthik Iyer.",
+    "parties": [
+      {
+        "name": "Brightwave Analytics Private Limited",
+        "role": "Company"
+      },
+      {
+        "name": "Mr. Karthik Iyer",
+        "role": "Employee"
+      }
+    ],
+    "agreeingTo": [
+      "You agree to start your employment on October 1, 2026, in Hyderabad.",
+      "You agree to a six-month probation period, which the Company can extend indefinitely.",
+      "You agree to repay a joining bonus with interest if you leave within 24 months.",
+      "You agree to pay liquidated damages if you leave within two years of receiving training.",
+      "You agree not to compete with the Company or solicit its employees/clients after leaving."
+    ]
+  },
+  "clauses": [
+    {
+      "title": "Start Date and Place of Work",
+      "category": "other",
+      "meaning": "Your employment starts on October 1, 2026, in Hyderabad, but the Company can move you to any location in India or abroad. If you refuse a transfer, it will be considered your resignation.",
+      "tilt": "HEAVILY_FAVORS_COUNTERPARTY",
+      "tiltReason": "The Company has sole discretion to transfer you anywhere, and refusal is treated as resignation, giving you no choice.",
+      "id": "clause-1",
+      "evidence": {
+        "quote": "Your employment will begin on 1 October 2026. Your place of work will be Hyderabad; however, the Company may transfer you to any office, client site or group company in India or abroad at its sole discretion, and refusal to accept a transfer will be treated as voluntary resignation",
+        "offset": 450,
+        "length": 282
+      }
+    },
+    {
+      "title": "Probation",
+      "category": "other",
+      "meaning": "You will be on probation for six months. The Company can extend this period without limit and can terminate your employment during probation with seven days' notice or pay.",
+      "tilt": "HEAVILY_FAVORS_COUNTERPARTY",
+      "tiltReason": "The Company can extend your probation indefinitely, keeping you in a less secure employment status for an unlimited time.",
+      "id": "clause-2",
+      "evidence": {
+        "quote": "You will be on probation for six (6) months. The Company may extend probation at its discretion without limit. During probation, the Company may terminate your employment with seven (7) days' notice or pay in lieu",
+        "offset": 748,
+        "length": 213
+      }
+    },
+    {
+      "title": "Joining Bonus and Clawback",
+      "category": "payment",
+      "meaning": "You will receive a Rs. 2,00,000 joining bonus. If you leave the Company for any reason within 24 months, you must repay the full bonus plus 18% annual interest within seven days of your last working day.",
+      "tilt": "HEAVILY_FAVORS_COUNTERPARTY",
+      "tiltReason": "The repayment obligation applies if you leave for 'any reason', including if the Company terminates your employment.",
+      "id": "clause-3",
+      "evidence": {
+        "quote": "You will receive a one-time joining bonus of Rs. 2,00,000. If you leave the Company for any reason within twenty-four (24) months of joining, you must repay the full joining bonus, together with interest at 18% per annum, within seven (7) days of your last working day",
+        "offset": 1505,
+        "length": 268
+      }
+    },
+    {
+      "title": "Training Bond",
+      "category": "penalty",
+      "meaning": "If the Company sends you for training, you must stay employed for at least two years after the training starts. If you leave or are terminated before then, you must pay Rs. 3,00,000 as damages.",
+      "tilt": "HEAVILY_FAVORS_COUNTERPARTY",
+      "tiltReason": "You are liable for a significant penalty even if the Company terminates your employment, which is unfair.",
+      "id": "clause-4",
+      "evidence": {
+        "quote": "The Company may nominate you for training programmes. You agree to remain employed for at least two (2) years after the Company first nominates you for any training. If you resign or are terminated for any reason before then, you shall pay the Company liquidated damages of Rs. 3,00,000, which you agree is a genuine pre-estimate of the Company's loss",
+        "offset": 1793,
+        "length": 351
+      }
+    },
+    {
+      "title": "Working Hours",
+      "category": "other",
+      "meaning": "Your normal work week is 45 hours. You may be required to work extra hours, weekends, and holidays without additional pay if the business needs it.",
+      "tilt": "FAVORS_COUNTERPARTY",
+      "tiltReason": "You are required to work additional hours, weekends, and holidays without extra pay.",
+      "id": "clause-5",
+      "evidence": {
+        "quote": "Normal working hours are 45 hours per week. You may be required to work additional hours, weekends and public holidays as business needs require, without additional compensation",
+        "offset": 2164,
+        "length": 177
+      }
+    },
+    {
+      "title": "Leave",
+      "category": "other",
+      "meaning": "You get 18 days of paid leave per year, adjusted for your first year. Any unused leave is lost at the end of the year and won't be paid out when you leave the Company.",
+      "tilt": "FAVORS_COUNTERPARTY",
+      "tiltReason": "Unused leave is not encashed upon exit, meaning you lose the value of any accumulated leave.",
+      "id": "clause-6",
+      "evidence": {
+        "quote": "You are entitled to 18 days of paid leave per calendar year, pro-rated for the first year. Unused leave lapses at the end of each year and is not encashed on exit",
+        "offset": 2353,
+        "length": 162
+      }
+    },
+    {
+      "title": "Confidentiality",
+      "category": "confidentiality",
+      "meaning": "You must keep all non-public information about the Company, its clients, and employees secret during your employment and for five years after you leave. This doesn't apply to public information or what you're legally required to disclose.",
+      "tilt": "NEUTRAL",
+      "tiltReason": "Standard confidentiality clause with reasonable exceptions for public or legally required disclosures.",
+      "id": "clause-7",
+      "evidence": {
+        "quote": "You shall keep confidential all non-public information about the Company, its clients and its employees, during your employment and for five (5) years afterwards. This obligation does not apply to information that is publicly available or that you are required by law to disclose",
+        "offset": 3168,
+        "length": 279
+      }
+    },
+    {
+      "title": "Intellectual Property",
+      "category": "other",
+      "meaning": "Anything you create, like work, inventions, code, or ideas, while employed by the Company, belongs entirely to the Company. This applies even if you create it outside working hours or without using Company resources.",
+      "tilt": "HEAVILY_FAVORS_COUNTERPARTY",
+      "tiltReason": "The Company claims ownership of all your creations, even those made on your own time and with your own resources, which is very broad.",
+      "id": "clause-8",
+      "evidence": {
+        "quote": "All work, inventions, code and ideas that you create during your employment, whether or not during working hours and whether or not using Company resources, shall belong exclusively to the Company",
+        "offset": 3476,
+        "length": 196
+      }
+    },
+    {
+      "title": "Deductions",
+      "category": "payment",
+      "meaning": "The Company can take money from your salary or final payment for any amount you owe them, including any loss they decide you caused.",
+      "tilt": "HEAVILY_FAVORS_COUNTERPARTY",
+      "tiltReason": "The Company has broad power to deduct amounts it 'determines to be a loss caused by you' without clear limits or a dispute process.",
+      "id": "clause-9",
+      "evidence": {
+        "quote": "The Company may deduct from your salary or final settlement any amount you owe the Company, including any amount the Company determines to be a loss caused by you",
+        "offset": 4005,
+        "length": 162
+      }
+    },
+    {
+      "title": "Governing Law",
+      "category": "jurisdiction",
+      "meaning": "This offer is controlled by the laws of India, and only courts in Hyderabad can handle any legal disputes.",
+      "tilt": "NEUTRAL",
+      "tiltReason": "Standard clause specifying the applicable law and jurisdiction.",
+      "id": "clause-10",
+      "evidence": {
+        "quote": "This offer is governed by the laws of India, and the courts at Hyderabad shall have exclusive jurisdiction",
+        "offset": 4188,
+        "length": 106
+      }
+    },
+    {
+      "title": "Acceptance",
+      "category": "other",
+      "meaning": "You need to sign and return this letter by August 20, 2026. If you don't, the job offer will expire.",
+      "tilt": "NEUTRAL",
+      "tiltReason": "Standard clause setting a deadline for acceptance of the offer.",
+      "id": "clause-11",
+      "evidence": {
+        "quote": "Please sign and return a copy of this letter by 20 August 2026. If we do not receive your acceptance by then, this offer will lapse",
+        "offset": 4312,
+        "length": 131
+      }
+    }
+  ],
+  "risks": [
+    {
+      "title": "Unlimited Probation Extension",
+      "severity": "HIGH",
+      "whatItSays": "The Company can extend your probation period without any limit.",
+      "whatCouldGoWrong": "You could remain on probation indefinitely, meaning the Company can terminate your employment with just seven days' notice at any time, without the protections typically afforded to confirmed employees. This creates job insecurity.",
+      "whoItHurts": "You, the Employee.",
+      "recommendedAction": "Ask for a clear limit on the probation extension period, such as a maximum of 3 or 6 additional months.",
+      "id": "risk-1",
+      "evidence": {
+        "quote": "The Company may extend probation at its discretion without limit. During probation, the Company may terminate your employment with seven (7) days' notice or pay in lieu",
+        "offset": 793,
+        "length": 168
+      }
+    },
+    {
+      "title": "Repayment of Joining Bonus if Terminated",
+      "severity": "HIGH",
+      "whatItSays": "If you leave the Company for any reason within 24 months of joining, you must repay the full joining bonus of Rs. 2,00,000 plus 18% interest.",
+      "whatCouldGoWrong": "If the Company terminates your employment (even without cause) within two years, you would still be required to repay the bonus, potentially leaving you in a difficult financial situation without a job and owing a significant amount of money.",
+      "whoItHurts": "You, the Employee.",
+      "recommendedAction": "Negotiate to have this clause apply only if you voluntarily resign, not if your employment is terminated by the Company.",
+      "id": "risk-2",
+      "evidence": {
+        "quote": "If you leave the Company for any reason within twenty-four (24) months of joining, you must repay the full joining bonus, together with interest at 18% per annum, within seven (7) days of your last working day",
+        "offset": 1564,
+        "length": 209
+      }
+    },
+    {
+      "title": "Training Bond Penalty if Terminated",
+      "severity": "HIGH",
+      "whatItSays": "If you resign or are terminated for any reason within two years of receiving training, you must pay Rs. 3,00,000 as liquidated damages.",
+      "whatCouldGoWrong": "Similar to the joining bonus, if the Company terminates your employment, you would still be liable to pay a substantial penalty, even if the termination was not your fault. This could result in a large debt.",
+      "whoItHurts": "You, the Employee.",
+      "recommendedAction": "Request that this penalty only applies if you voluntarily resign, not if the Company terminates your employment.",
+      "id": "risk-3",
+      "evidence": {
+        "quote": "If you resign or are terminated for any reason before then, you shall pay the Company liquidated damages of Rs. 3,00,000, which you agree is a genuine pre-estimate of the Company's loss",
+        "offset": 1959,
+        "length": 185
+      }
+    },
+    {
+      "title": "Broad Non-Compete Clause",
+      "severity": "HIGH",
+      "whatItSays": "For 24 months after leaving, you cannot work for, consult for, or start any business that competes with the Company 'anywhere in the world'.",
+      "whatCouldGoWrong": "This clause is extremely broad in its geographic scope and duration. It could severely restrict your ability to find new employment or start a business in your field for two years, potentially forcing you to leave your industry or relocate.",
+      "whoItHurts": "You, the Employee.",
+      "recommendedAction": "Seek to limit the non-compete clause to a specific geographic area (e.g., Hyderabad) and a shorter duration (e.g., 6-12 months), and clarify what constitutes a 'competing business'.",
+      "id": "risk-4",
+      "evidence": {
+        "quote": "For twenty-four (24) months after leaving the Company, you shall not work for, consult for, or start any business that competes with the Company anywhere in the world",
+        "offset": 3717,
+        "length": 166
+      }
+    },
+    {
+      "title": "Company's Discretion to Terminate for 'Misconduct'",
+      "severity": "MEDIUM",
+      "whatItSays": "The Company can terminate your employment immediately without notice for misconduct, which includes 'any act the Company considers detrimental to its interests'.",
+      "whatCouldGoWrong": "The definition of 'misconduct' is very broad and subjective, giving the Company significant power to terminate you without notice for reasons that might not be clearly defined or fair. This could leave you without income suddenly.",
+      "whoItHurts": "You, the Employee.",
+      "recommendedAction": "Ask for a more specific definition of 'misconduct' or a list of examples that would warrant immediate termination.",
+      "id": "risk-5",
+      "evidence": {
+        "quote": "The Company may terminate your employment immediately and without notice for misconduct, which includes any act the Company considers detrimental to its interests",
+        "offset": 2812,
+        "length": 162
+      }
+    },
+    {
+      "title": "Broad Company Deduction Rights",
+      "severity": "MEDIUM",
+      "whatItSays": "The Company can deduct any amount you owe them, including any amount the Company 'determines to be a loss caused by you', from your salary or final settlement.",
+      "whatCouldGoWrong": "This clause gives the Company broad power to unilaterally decide you owe them money and deduct it from your pay, potentially reducing your final settlement significantly without a clear process for dispute or appeal.",
+      "whoItHurts": "You, the Employee.",
+      "recommendedAction": "Request clarification on the process for determining losses and deductions, and ask for a right to dispute such determinations.",
+      "id": "risk-6",
+      "evidence": {
+        "quote": "The Company may deduct from your salary or final settlement any amount you owe the Company, including any amount the Company determines to be a loss caused by you",
+        "offset": 4005,
+        "length": 162
+      }
+    },
+    {
+      "title": "Company Ownership of All IP",
+      "severity": "MEDIUM",
+      "whatItSays": "All work, inventions, code, and ideas you create during your employment, even outside working hours or without Company resources, belong exclusively to the Company.",
+      "whatCouldGoWrong": "This clause is very broad and could mean that any personal projects or ideas you develop on your own time, using your own equipment, could still be claimed by the Company. This limits your personal innovation and future opportunities.",
+      "whoItHurts": "You, the Employee.",
+      "recommendedAction": "Seek to narrow this clause to only cover work directly related to your employment or created using Company resources, and clarify ownership of pre-existing intellectual property.",
+      "id": "risk-7",
+      "evidence": {
+        "quote": "All work, inventions, code and ideas that you create during your employment, whether or not during working hours and whether or not using Company resources, shall belong exclusively to the Company",
+        "offset": 3476,
+        "length": 196
+      }
+    }
+  ],
+  "obligations": [
+    {
+      "party": "Employee",
+      "action": "Submit PAN and bank details to HR",
+      "deadline": "Before salary details are credited",
+      "dueDate": null,
+      "consequence": "Salary details will not be credited to your account",
+      "id": "obligation-1",
+      "evidence": {
+        "quote": "Salary details will be credited to your salary account after you submit your PAN (format: ABCDE1234F) and bank details to HR",
+        "offset": 1348,
+        "length": 124
+      }
+    },
+    {
+      "party": "Employee",
+      "action": "Repay joining bonus with interest",
+      "deadline": "Within seven (7) days of your last working day",
+      "dueDate": null,
+      "consequence": "Not stated in the document",
+      "id": "obligation-2",
+      "evidence": {
+        "quote": "If you leave the Company for any reason within twenty-four (24) months of joining, you must repay the full joining bonus, together with interest at 18% per annum, within seven (7) days of your last working day",
+        "offset": 1564,
+        "length": 209
+      }
+    },
+    {
+      "party": "Employee",
+      "action": "Remain employed after training nomination",
+      "deadline": "At least two (2) years after the Company first nominates you for any training",
+      "dueDate": null,
+      "consequence": "You shall pay the Company liquidated damages of Rs. 3,00,000",
+      "id": "obligation-3",
+      "evidence": {
+        "quote": "You agree to remain employed for at least two (2) years after the Company first nominates you for any training. If you resign or are terminated for any reason before then, you shall pay the Company liquidated damages of Rs. 3,00,000, which you agree is a genuine pre-estimate of the Company's loss",
+        "offset": 1847,
+        "length": 297
+      }
+    },
+    {
+      "party": "Employee",
+      "action": "Keep non-public information confidential",
+      "deadline": "During your employment and for five (5) years afterwards",
+      "dueDate": null,
+      "consequence": "Not stated in the document",
+      "id": "obligation-4",
+      "evidence": {
+        "quote": "You shall keep confidential all non-public information about the Company, its clients and its employees, during your employment and for five (5) years afterwards",
+        "offset": 3168,
+        "length": 161
+      }
+    },
+    {
+      "party": "Employee",
+      "action": "Not work for, consult for, or start a competing business",
+      "deadline": "For twenty-four (24) months after leaving the Company",
+      "dueDate": null,
+      "consequence": "Not stated in the document",
+      "id": "obligation-5",
+      "evidence": {
+        "quote": "For twenty-four (24) months after leaving the Company, you shall not work for, consult for, or start any business that competes with the Company anywhere in the world",
+        "offset": 3717,
+        "length": 166
+      }
+    },
+    {
+      "party": "Employee",
+      "action": "Not solicit any employee or client of the Company",
+      "deadline": "For twelve (12) months after leaving",
+      "dueDate": null,
+      "consequence": "Not stated in the document",
+      "id": "obligation-6",
+      "evidence": {
+        "quote": "For twelve (12) months after leaving, you shall not solicit any employee or client of the Company",
+        "offset": 3890,
+        "length": 97
+      }
+    },
+    {
+      "party": "Employee",
+      "action": "Sign and return a copy of the letter",
+      "deadline": "By 20 August 2026",
+      "dueDate": "2026-08-20",
+      "consequence": "This offer will lapse",
+      "id": "obligation-7",
+      "evidence": {
+        "quote": "Please sign and return a copy of this letter by 20 August 2026. If we do not receive your acceptance by then, this offer will lapse",
+        "offset": 4312,
+        "length": 131
+      }
+    },
+    {
+      "party": "Company",
+      "action": "Issue relieving letter and experience certificate",
+      "deadline": "Up to ninety (90) days after your last working day",
+      "dueDate": null,
+      "consequence": "Not stated in the document",
+      "id": "obligation-8",
+      "evidence": {
+        "quote": "The relieving letter and experience certificate will be issued only after full and final settlement, which may take up to ninety (90) days after your last working day",
+        "offset": 2980,
+        "length": 166
+      }
+    }
+  ],
+  "prep": {
+    "questions": [
+      "Can the probation period be capped at a maximum duration, such as 6 or 12 months, instead of being unlimited?",
+      "Can the joining bonus and training bond repayment clauses be modified so they only apply if I voluntarily resign, not if the Company terminates my employment?",
+      "Can the non-compete clause be limited in geographic scope (e.g., to Hyderabad) and duration (e.g., 6-12 months) to allow for future employment opportunities?",
+      "What specific acts constitute 'misconduct' that would lead to immediate termination without notice, and can these be clearly defined in the agreement?",
+      "Can the clause regarding Company ownership of intellectual property be narrowed to only cover work directly related to my employment or created using Company resources?",
+      "What is the process for disputing any deductions the Company might make from my salary or final settlement?",
+      "Is there any flexibility regarding the encashment of unused leave upon exit, or is it strictly forfeited?",
+      "Can the Company's right to transfer me to any location, including abroad, be limited or require my consent?"
+    ],
+    "informationGaps": [
+      "The document does not specify the exact terms or duration of 'training programmes' that would trigger the training bond.",
+      "The document does not define what constitutes a 'competing business' for the non-compete clause.",
+      "There is no clear process outlined for disputing the Company's determination of 'loss caused by you' for deductions.",
+      "The document does not specify the consequences if the employee fails to repay the joining bonus or training bond amount.",
+      "The document does not detail the types of statutory deductions that will be made from the salary.",
+      "The document does not specify the notice period for termination during the extended probation period, only during the initial 6 months.",
+      "The document does not clarify if the 18% interest on the joining bonus is simple or compound interest."
+    ],
+    "documentsToBring": [
+      "A copy of this Offer of Employment and Terms of Service.",
+      "Any other communications or documents exchanged with Brightwave Analytics Private Limited regarding this offer.",
+      "Your current resume or CV.",
+      "Any previous employment agreements or non-compete clauses you may have signed with prior employers."
+    ],
+    "caseSummary": "Karthik Iyer has received an offer of employment as a Software Engineer II from Brightwave Analytics Private Limited, starting October 1, 2026, with an annual salary of Rs. 18,00,000. The offer includes a six-month probation period that can be extended indefinitely, and a discretionary performance bonus. Key concerns include clauses requiring repayment of a Rs. 2,00,000 joining bonus and a Rs. 3,00,000 training bond penalty if employment ends for any reason within 24 months of joining or training, respectively. The Company also retains broad rights to transfer the employee, terminate for 'misconduct' (defined broadly), deduct amounts from salary, and claim all intellectual property. A global non-compete clause for 24 months post-employment is also present. Karthik needs to accept the offer by August 20, 2026. Legal advice is sought to understand and potentially negotiate these terms, particularly those that heavily favor the Company and pose significant financial or career risks."
+  },
+  "balance": {
+    "score": 21,
+    "verdict": "Tilted against you"
+  },
+  "grounding": {
+    "verified": 26,
+    "total": 29
+  },
+  "redactionCount": 5,
+  "injectionsIgnored": 0,
+  "truncated": false,
+  "language": "en",
+  "source": "live"
+}

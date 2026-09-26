@@ -1,0 +1,361 @@
+{
+  "brief": {
+    "documentType": "rental",
+    "title": "Leave and Licence Agreement",
+    "userParty": "Licensee",
+    "summary": "This is a rental agreement, called a Leave and Licence Agreement, between Mr. Suresh Venkat Reddy (the Licensor) and Ms. Ananya Kulkarni (the Licensee). It allows Ms. Kulkarni to live in a flat in Hyderabad for 11 months. The agreement outlines the monthly rent, a security deposit, and rules for maintenance, use of the property, and how the agreement can be ended or renewed. It also details who is responsible for various costs and liabilities.",
+    "purpose": "This document grants Ms. Ananya Kulkarni the right to occupy a flat for residential use for a specific period in exchange for a monthly fee.",
+    "parties": [
+      {
+        "name": "Mr. Suresh Venkat Reddy",
+        "role": "Licensor"
+      },
+      {
+        "name": "Ms. Ananya Kulkarni",
+        "role": "Licensee"
+      }
+    ],
+    "agreeingTo": [
+      "Pay a monthly licence fee of Rs. 32,000 by the 5th of each month.",
+      "Pay an interest-free security deposit of Rs. 1,92,000 before moving in.",
+      "Pay for all repairs to the premises, including structural and appliance repairs.",
+      "Not sublet the premises or have overnight guests for more than three nights without consent.",
+      "Indemnify the Licensor against all claims and costs arising from your occupation."
+    ]
+  },
+  "clauses": [
+    {
+      "title": "Premises",
+      "category": "other",
+      "meaning": "This clause states that the Licensor is allowing the Licensee to use Flat No. 402, Lotus Residency, along with the listed fixtures, only for living purposes.",
+      "tilt": "NEUTRAL",
+      "tiltReason": "This clause simply defines the property and its permitted use.",
+      "id": "clause-1",
+      "evidence": {
+        "quote": "The Licensor grants the Licensee a licence to occupy Flat No. 402, Lotus Residency, Madhapur, Hyderabad 500081 (the \"Premises\") for residential use only, together with the fixtures and fittings listed in Schedule A",
+        "offset": 499,
+        "length": 214
+      }
+    },
+    {
+      "title": "Term",
+      "category": "other",
+      "meaning": "This agreement is valid for 11 months, starting on April 1, 2026, and ending on February 28, 2027.",
+      "tilt": "NEUTRAL",
+      "tiltReason": "This clause sets a standard fixed term for the agreement.",
+      "id": "clause-2",
+      "evidence": {
+        "quote": "This licence is for a period of eleven (11) months commencing on 1 April 2026 and ending on 28 February 2027",
+        "offset": 724,
+        "length": 108
+      }
+    },
+    {
+      "title": "Maintenance and Repairs",
+      "category": "other",
+      "meaning": "You are responsible for paying the monthly society maintenance charge. You must also pay for all repairs to the flat, including major structural repairs, plumbing, electrical issues, and repairs to appliances provided by the Licensor, no matter what caused the damage.",
+      "tilt": "HEAVILY_FAVORS_COUNTERPARTY",
+      "tiltReason": "The Licensee is made responsible for all repairs, including structural ones, which are typically the owner's responsibility.",
+      "id": "clause-3",
+      "evidence": {
+        "quote": "The Licensee shall bear the cost of all repairs to the Premises, including structural repairs, plumbing, electrical wiring and repairs to appliances supplied by the Licensor, whatever the cause",
+        "offset": 2157,
+        "length": 193
+      }
+    },
+    {
+      "title": "Access",
+      "category": "other",
+      "meaning": "The Licensor or their representatives can enter and inspect the flat at any time, even without telling you beforehand.",
+      "tilt": "HEAVILY_FAVORS_COUNTERPARTY",
+      "tiltReason": "This clause allows the Licensor to enter without notice, which is a significant invasion of privacy.",
+      "id": "clause-4",
+      "evidence": {
+        "quote": "The Licensor or his agents may enter and inspect the Premises at any time, with or without notice to the Licensee",
+        "offset": 2618,
+        "length": 113
+      }
+    },
+    {
+      "title": "Renewal",
+      "category": "renewal",
+      "meaning": "This agreement will automatically renew for another 11 months with a 10% rent increase, unless you give written notice that you don't want to renew at least 60 days before the current term ends.",
+      "tilt": "FAVORS_COUNTERPARTY",
+      "tiltReason": "The automatic renewal with a rent increase and a long notice period for non-renewal favors the Licensor.",
+      "id": "clause-5",
+      "evidence": {
+        "quote": "This Agreement shall automatically renew for a further eleven (11) months on the same terms, with a 10% increase in the licence fee, unless the Licensee gives written notice of non-renewal at least sixty (60) days before expiry",
+        "offset": 3361,
+        "length": 227
+      }
+    },
+    {
+      "title": "Notices",
+      "category": "notice",
+      "meaning": "If you need to send a notice under this agreement, you must use registered post. The Licensor can send notices by WhatsApp, email, or registered post, and their notices are considered received the day they are sent.",
+      "tilt": "FAVORS_COUNTERPARTY",
+      "tiltReason": "The Licensor has more options for sending notices and their notices are deemed received immediately, while the Licensee has a more restrictive method.",
+      "id": "clause-6",
+      "evidence": {
+        "quote": "Notices under this Agreement shall be sent by the Licensee by registered post only. The Licensor may send notices by WhatsApp, email or registered post, and a notice shall be deemed received on the day it is sent",
+        "offset": 4010,
+        "length": 212
+      }
+    },
+    {
+      "title": "Governing Law and Jurisdiction",
+      "category": "jurisdiction",
+      "meaning": "Indian laws apply to this agreement. Any legal disputes will be handled by the courts in Hyderabad. Before going to court, any dispute must first be sent to an arbitrator chosen by the Licensor.",
+      "tilt": "FAVORS_COUNTERPARTY",
+      "tiltReason": "The Licensor unilaterally appoints the arbitrator, which is unfair to the Licensee.",
+      "id": "clause-7",
+      "evidence": {
+        "quote": "This Agreement is governed by the laws of India. The courts at Hyderabad shall have exclusive jurisdiction. Any dispute shall first be referred to a sole arbitrator appointed by the Licensor",
+        "offset": 4260,
+        "length": 190
+      }
+    },
+    {
+      "title": "Registration Costs",
+      "category": "payment",
+      "meaning": "You are responsible for paying all the costs related to stamp duty and registering this agreement.",
+      "tilt": "FAVORS_COUNTERPARTY",
+      "tiltReason": "These costs are typically shared or borne by the owner, but here they are entirely on the Licensee.",
+      "id": "clause-8",
+      "evidence": {
+        "quote": "The Licensee shall bear the full stamp duty and registration charges for this Agreement",
+        "offset": 4470,
+        "length": 87
+      }
+    }
+  ],
+  "risks": [
+    {
+      "title": "Broad Responsibility for All Repairs",
+      "severity": "HIGH",
+      "whatItSays": "You must pay for all repairs to the premises, including structural repairs, plumbing, electrical wiring, and repairs to appliances provided by the Licensor, regardless of the cause.",
+      "whatCouldGoWrong": "You could be held responsible for very expensive repairs, such as major structural damage or appliance breakdowns, which are typically the owner's responsibility. This could lead to significant unexpected costs.",
+      "whoItHurts": "The Licensee (you).",
+      "recommendedAction": "Negotiate to limit your responsibility to minor repairs and damages caused by your negligence, with the Licensor responsible for structural repairs, major system failures, and normal wear and tear.",
+      "id": "risk-1",
+      "evidence": {
+        "quote": "The Licensee shall bear the cost of all repairs to the Premises, including structural repairs, plumbing, electrical wiring and repairs to appliances supplied by the Licensor, whatever the cause",
+        "offset": 2157,
+        "length": 193
+      }
+    },
+    {
+      "title": "Licensor's Unrestricted Access to Premises",
+      "severity": "HIGH",
+      "whatItSays": "The Licensor or their agents can enter and inspect the premises at any time, with or without notice to you.",
+      "whatCouldGoWrong": "This clause allows the Licensor to enter your home without warning, which is a significant invasion of your privacy and right to quiet enjoyment of the property.",
+      "whoItHurts": "The Licensee (you).",
+      "recommendedAction": "Request that the clause be changed to require reasonable advance notice (e.g., 24-48 hours) for non-emergency entry, except in genuine emergencies.",
+      "id": "risk-2",
+      "evidence": {
+        "quote": "The Licensor or his agents may enter and inspect the Premises at any time, with or without notice to the Licensee",
+        "offset": 2618,
+        "length": 113
+      }
+    },
+    {
+      "title": "Automatic Renewal with Rent Increase",
+      "severity": "LOW",
+      "whatItSays": "The agreement automatically renews for another 11 months with a 10% rent increase, unless you give written notice of non-renewal at least 60 days before the current term ends.",
+      "whatCouldGoWrong": "If you forget to give notice 60 days in advance, you will be locked into another 11-month term with a higher rent, even if you intended to move out.",
+      "whoItHurts": "The Licensee (you).",
+      "recommendedAction": "Set a reminder well in advance of the 60-day deadline if you do not wish to renew. Consider negotiating for an opt-in renewal rather than an automatic one.",
+      "id": "risk-3",
+      "evidence": {
+        "quote": "This Agreement shall automatically renew for a further eleven (11) months on the same terms, with a 10% increase in the licence fee, unless the Licensee gives written notice of non-renewal at least sixty (60) days before expiry",
+        "offset": 3361,
+        "length": 227
+      }
+    }
+  ],
+  "obligations": [
+    {
+      "party": "Licensee",
+      "action": "Pay an interest-free refundable security deposit of Rs. 1,92,000",
+      "deadline": "before taking possession",
+      "dueDate": null,
+      "consequence": "Not stated in the document",
+      "id": "obligation-1",
+      "evidence": {
+        "quote": "The Licensee shall pay an interest-free refundable security deposit of Rs. 1,92,000 (six months' licence fee) before taking possession",
+        "offset": 1420,
+        "length": 134
+      }
+    },
+    {
+      "party": "Licensee",
+      "action": "Pay the monthly society maintenance charge of Rs. 3,500",
+      "deadline": "monthly",
+      "dueDate": null,
+      "consequence": "Not stated in the document",
+      "id": "obligation-2",
+      "evidence": {
+        "quote": "The Licensee shall pay the monthly society maintenance charge of Rs. 3,500 directly to Lotus Residency Owners' Association",
+        "offset": 2029,
+        "length": 122
+      }
+    },
+    {
+      "party": "Licensee",
+      "action": "Bear the cost of all repairs to the Premises",
+      "deadline": "as needed",
+      "dueDate": null,
+      "consequence": "Not stated in the document",
+      "id": "obligation-3",
+      "evidence": {
+        "quote": "The Licensee shall bear the cost of all repairs to the Premises, including structural repairs, plumbing, electrical wiring and repairs to appliances supplied by the Licensor, whatever the cause",
+        "offset": 2157,
+        "length": 193
+      }
+    },
+    {
+      "party": "Licensee",
+      "action": "Not sub-let, assign or part with possession of the Premises",
+      "deadline": "during the term",
+      "dueDate": null,
+      "consequence": "Not stated in the document",
+      "id": "obligation-4",
+      "evidence": {
+        "quote": "The Licensee shall not sub-let, assign or part with possession of the Premises",
+        "offset": 2376,
+        "length": 78
+      }
+    },
+    {
+      "party": "Licensee",
+      "action": "Not keep pets or have overnight guests for more than three (3) consecutive nights",
+      "deadline": "during the term",
+      "dueDate": null,
+      "consequence": "Not stated in the document",
+      "id": "obligation-5",
+      "evidence": {
+        "quote": "The Licensee shall not keep pets or have overnight guests for more than three (3) consecutive nights without the Licensor's prior written consent",
+        "offset": 2460,
+        "length": 145
+      }
+    },
+    {
+      "party": "Licensor",
+      "action": "Refund the security deposit",
+      "deadline": "within ninety (90) days after the Licensee vacates",
+      "dueDate": null,
+      "consequence": "Not stated in the document",
+      "id": "obligation-6",
+      "evidence": {
+        "quote": "The Licensor shall refund the deposit within ninety (90) days after the Licensee vacates, after deducting any amount that the Licensor, in his sole discretion, considers necessary for repairs, repainting, cleaning or unpaid dues",
+        "offset": 1560,
+        "length": 228
+      }
+    },
+    {
+      "party": "Licensee",
+      "action": "Hand over vacant possession",
+      "deadline": "On expiry or termination",
+      "dueDate": null,
+      "consequence": "Pay Rs. 5,000 per day as damages for every day the Licensee remains in the Premises after that date.",
+      "id": "obligation-7",
+      "evidence": {
+        "quote": "On expiry or termination, the Licensee shall hand over vacant possession. For every day the Licensee remains in the Premises after that date, the Licensee shall pay Rs. 5,000 per day as damages",
+        "offset": 3154,
+        "length": 193
+      }
+    },
+    {
+      "party": "Licensee",
+      "action": "Give written notice of non-renewal",
+      "deadline": "at least sixty (60) days before expiry",
+      "dueDate": null,
+      "consequence": "Agreement shall automatically renew for a further eleven (11) months on the same terms, with a 10% increase in the licence fee.",
+      "id": "obligation-8",
+      "evidence": {
+        "quote": "This Agreement shall automatically renew for a further eleven (11) months on the same terms, with a 10% increase in the licence fee, unless the Licensee gives written notice of non-renewal at least sixty (60) days before expiry",
+        "offset": 3361,
+        "length": 227
+      }
+    },
+    {
+      "party": "Licensee",
+      "action": "Indemnify the Licensor against all claims, losses, fines and legal costs",
+      "deadline": "as they arise",
+      "dueDate": null,
+      "consequence": "Not stated in the document",
+      "id": "obligation-9",
+      "evidence": {
+        "quote": "The Licensee shall indemnify the Licensor against all claims, losses, fines and legal costs arising in any way from the Licensee's occupation of the Premises",
+        "offset": 3838,
+        "length": 157
+      }
+    },
+    {
+      "party": "Licensee",
+      "action": "Send notices under this Agreement",
+      "deadline": "as required",
+      "dueDate": null,
+      "consequence": "Not stated in the document",
+      "id": "obligation-10",
+      "evidence": {
+        "quote": "Notices under this Agreement shall be sent by the Licensee by registered post only",
+        "offset": 4010,
+        "length": 82
+      }
+    },
+    {
+      "party": "Licensee",
+      "action": "Bear the full stamp duty and registration charges for this Agreement",
+      "deadline": "Not stated in the document",
+      "dueDate": null,
+      "consequence": "Not stated in the document",
+      "id": "obligation-11",
+      "evidence": {
+        "quote": "The Licensee shall bear the full stamp duty and registration charges for this Agreement",
+        "offset": 4470,
+        "length": 87
+      }
+    }
+  ],
+  "prep": {
+    "questions": [
+      "Can the late fee be capped to a reasonable maximum amount, instead of being unlimited?",
+      "Can the clause regarding rent increases be modified to allow increases only upon renewal, or with a longer notice period (e.g., 60 days)?",
+      "Can the security deposit deductions be made more specific, removing the 'sole discretion' of the Licensor and the mandatory repainting charge?",
+      "Can the responsibility for structural repairs and major appliance breakdowns be shifted to the Licensor, as is typical for owners?",
+      "Can the clause allowing the Licensor to enter without notice be changed to require reasonable advance notice (e.g., 24-48 hours) for non-emergencies?",
+      "Can the lock-in period for the Licensee be reduced, or the penalty for early termination be less severe than forfeiture of the entire deposit?",
+      "Can the automatic renewal clause be changed to an opt-in renewal, or at least require a mutual agreement on the rent increase?",
+      "Can the indemnity clause be limited to claims arising from the Licensee's negligence, and can the Licensor retain liability for their own negligence?"
+    ],
+    "informationGaps": [
+      "The exact date for taking possession of the premises is not specified, only that the security deposit must be paid before it.",
+      "There is no clear process for how the Licensor's 'sole discretion' on security deposit deductions will be exercised or challenged.",
+      "The document does not specify what constitutes 'reasonable wear and tear' for which the Licensee would not be responsible for repairs.",
+      "The consequences for the Licensor failing to refund the security deposit within 90 days are not stated.",
+      "The specific bank account details for the security deposit payment are not provided, only for the monthly licence fee.",
+      "The document does not specify the process for appointing the sole arbitrator if the Licensor is unable or unwilling to do so."
+    ],
+    "documentsToBring": [
+      "A copy of this Leave and Licence Agreement.",
+      "Any communication (emails, messages) exchanged with the Licensor regarding the terms.",
+      "Photos or videos of the premises' condition before moving in, if available.",
+      "Bank statements showing payment of the security deposit and any licence fees."
+    ],
+    "caseSummary": "This Leave and Licence Agreement is for the rental of Flat No. 402, Lotus Residency, Hyderabad, for 11 months starting April 1, 2026. The Licensee, Ms. Ananya Kulkarni, is required to pay a monthly fee of Rs. 32,000 and a large, interest-free security deposit of Rs. 1,92,000. Key concerns for the Licensee include an uncapped daily late fee of Rs. 1,000, the Licensor's ability to increase rent by 15% with only seven days' notice, and broad responsibility for all repairs, including structural ones. The Licensor has sole discretion over security deposit deductions, including a mandatory repainting charge, and can enter the premises without notice. The termination clause heavily favors the Licensor, who can end the agreement with 15 days' notice, while the Licensee faces a six-month lock-in period and forfeiture of the entire deposit for early termination. The agreement also includes an automatic renewal with a rent increase and a broad indemnity clause that exempts the Licensor from liability, even for their own negligence. The Licensee bears all registration costs and the Licensor unilaterally appoints the arbitrator for disputes. Legal advice is needed to understand and potentially negotiate these one-sided terms."
+  },
+  "balance": {
+    "score": 33,
+    "verdict": "Tilted against you"
+  },
+  "grounding": {
+    "verified": 22,
+    "total": 32
+  },
+  "redactionCount": 6,
+  "injectionsIgnored": 0,
+  "truncated": false,
+  "language": "en",
+  "source": "live"
+}

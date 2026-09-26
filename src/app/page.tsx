@@ -3,6 +3,33 @@ import { buttonClasses } from "@/components/ui/Button";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { SAMPLE_CATALOG } from "@/data/sample-catalog";
 
+const STEPS: readonly { title: string; body: string; href: string; cta: string }[] = [
+  {
+    title: "Understand it",
+    body: "A plain-English brief, every material clause explained, the risks ranked, and every deadline on a timeline you can add to your calendar.",
+    href: "/analyze",
+    cta: "Analyse a document",
+  },
+  {
+    title: "Question it",
+    body: "Ask anything about the document. Answers come only from its text, with the passages quoted, and it tells you when the document is silent.",
+    href: "/ask",
+    cta: "Ask a question",
+  },
+  {
+    title: "Compare it",
+    body: "See what changed between two versions, or how your document measures up against a fair, balanced version of the same kind of agreement.",
+    href: "/compare",
+    cta: "Compare documents",
+  },
+  {
+    title: "Act on it",
+    body: "Get fairer wording and a polite message for each unfair clause, or a prep pack that makes your first meeting with a lawyer faster and cheaper.",
+    href: "/prep",
+    cta: "Open the prep pack",
+  },
+];
+
 const PILLARS: readonly { icon: IconName; title: string; body: string }[] = [
   {
     icon: "scale",
@@ -72,6 +99,32 @@ export default function HomePage() {
             </li>
           ))}
         </ul>
+      </section>
+
+      <section aria-labelledby="steps-heading" className="space-y-6">
+        <h2 id="steps-heading" className="font-serif text-2xl font-semibold">
+          From first read to a better deal
+        </h2>
+        <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {STEPS.map((step, index) => (
+            <li
+              key={step.title}
+              className="flex flex-col rounded-xl border border-line bg-surface p-5"
+            >
+              <span className="font-serif text-3xl font-semibold text-accent" aria-hidden="true">
+                {index + 1}
+              </span>
+              <h3 className="mt-2 font-serif text-lg font-semibold">{step.title}</h3>
+              <p className="mt-2 flex-1 text-sm text-muted">{step.body}</p>
+              <Link
+                href={step.href}
+                className="mt-4 text-sm font-semibold text-accent underline-offset-4 hover:underline"
+              >
+                {step.cta} →
+              </Link>
+            </li>
+          ))}
+        </ol>
       </section>
 
       <section aria-labelledby="how-heading" className="space-y-6">

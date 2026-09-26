@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Public_Sans, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
     "Understand rental agreements, job offers, NDAs and loan papers in plain English. See which clauses tilt against you, with every claim backed by a verified quote.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en" className={`${body.variable} ${heading.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col font-sans">{children}</body>

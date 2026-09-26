@@ -43,7 +43,7 @@ export function Tabs({ items, label }: { items: readonly TabItem[]; label: strin
       <div
         role="tablist"
         aria-label={label}
-        className="flex gap-1 overflow-x-auto border-b border-line print:hidden"
+        className="flex gap-1 overflow-x-auto rounded-xl border border-line bg-surface p-1 print:hidden"
       >
         {items.map((item, index) => (
           <button
@@ -60,10 +60,10 @@ export function Tabs({ items, label }: { items: readonly TabItem[]; label: strin
             onClick={() => setActive(index)}
             onKeyDown={onKeyDown}
             className={cn(
-              "min-h-11 shrink-0 border-b-2 px-4 text-sm font-semibold transition",
+              "min-h-11 shrink-0 rounded-lg px-4 text-sm font-semibold transition-colors duration-200",
               index === active
-                ? "border-accent text-accent"
-                : "border-transparent text-muted hover:text-ink",
+                ? "bg-accent text-accent-ink shadow-soft"
+                : "text-muted hover:bg-paper hover:text-ink",
             )}
           >
             {item.label}
@@ -78,7 +78,7 @@ export function Tabs({ items, label }: { items: readonly TabItem[]; label: strin
           aria-labelledby={`${baseId}-tab-${item.id}`}
           hidden={index !== active}
           tabIndex={0}
-          className="pt-6"
+          className="fade-in pt-6"
         >
           {item.content}
         </div>

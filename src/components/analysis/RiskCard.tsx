@@ -20,9 +20,12 @@ export function RiskCard({ risk }: { risk: Risk }) {
   return (
     <article
       aria-labelledby={`${risk.id}-title`}
-      className={cn("rounded-xl border border-l-4 border-line bg-surface p-5", EDGE[risk.severity])}
+      className={cn(
+        "rounded-xl border border-l-4 border-line bg-surface p-5 sm:p-6",
+        EDGE[risk.severity],
+      )}
     >
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-col items-start gap-2">
         <Badge tone={severity.tone}>{severity.label}</Badge>
         <h3 id={`${risk.id}-title`} className="font-serif text-lg font-semibold">
           {risk.title}

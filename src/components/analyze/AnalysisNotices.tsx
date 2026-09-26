@@ -13,7 +13,7 @@ function Notice({
   children: React.ReactNode;
 }) {
   return (
-    <li className={cn("flex items-start gap-2 rounded-lg border px-3 py-2 text-sm", tone)}>
+    <li className={cn("flex items-start gap-3 rounded-xl border px-4 py-3 text-sm", tone)}>
       <Icon name={icon} className="mt-0.5 size-4 shrink-0" />
       <span className="text-ink">{children}</span>
     </li>
@@ -39,14 +39,14 @@ export function AnalysisNotices({ result }: { result: AnalysisResult }) {
         Your document was processed in memory and not stored.
       </Notice>
       {result.injectionsIgnored > 0 && (
-        <Notice icon="alert" tone="border-bad/40 bg-bad-soft text-bad">
+        <Notice icon="shield" tone="border-line bg-surface text-warn">
           {pluralize(result.injectionsIgnored, "suspicious instruction")} in the document{" "}
           {result.injectionsIgnored === 1 ? "was" : "were"} ignored. Text that tries to steer an
           automated reviewer is treated as part of the document, never as a command.
         </Notice>
       )}
       {result.truncated && (
-        <Notice icon="info" tone="border-info/40 bg-info-soft text-info">
+        <Notice icon="info" tone="border-line bg-surface text-info">
           This document is long, so the middle section was shortened before analysis. The beginning
           and end were read in full.
         </Notice>

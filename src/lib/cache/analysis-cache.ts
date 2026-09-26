@@ -8,7 +8,7 @@ const MAX_ENTRIES = 100;
 /** Thirty minutes: long enough for re-explaining and revisiting, short enough to stay fresh. */
 const TTL_MS = 30 * 60 * 1000;
 /** Bump when the analysis prompt or output schema changes, so stale entries are never reused. */
-const PROMPT_VERSION = "analyze-v1";
+const PROMPT_VERSION = "analyze-v2";
 
 /**
  * Validated model output keyed by a hash of the redacted prompt text. Values still contain

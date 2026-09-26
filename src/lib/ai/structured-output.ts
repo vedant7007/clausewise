@@ -4,8 +4,10 @@ import { z } from "zod";
 const MAX_REPORTED_ISSUES = 12;
 
 /**
- * Size, pattern and default keywords are enforced by Zod after the response arrives. Sending them to
- * the provider bloats constrained decoding (Gemini rejects such schemas as "too many states").
+ * Size, pattern and default keywords are enforced by Zod after the response arrives; sending
+ * them bloats constrained decoding (Gemini rejects such schemas as "too many states").
+ * Descriptions stay in Zod as documentation but are not sent: the task prompt already gives
+ * that guidance, and repeating it per field cost about 28% of the input tokens.
  */
 const LOCAL_ONLY_KEYWORDS = new Set([
   "$schema",
@@ -16,6 +18,7 @@ const LOCAL_ONLY_KEYWORDS = new Set([
   "pattern",
   "format",
   "default",
+  "description",
 ]);
 
 function stripLocalOnly(node: unknown): unknown {

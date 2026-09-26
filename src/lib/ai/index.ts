@@ -4,6 +4,13 @@ import { GeminiProvider } from "./gemini-provider";
 import { GroqProvider } from "./groq-provider";
 import type { AIProvider } from "./provider";
 
+/** Health checks are cached so the endpoint cannot be used to hammer the provider. */
+const HEALTH_CACHE_MS = 60_000;
+const HEALTH_TIMEOUT_MS = 5_000;
+
+/** Reachability of the analysis model, as reported by the health check. */
+export type AIReachability = "reachable" | "unreachable" | "not_configured";
+
 /**
  * Builds providers from whichever keys are set. Gemini is primary when present; any second
  * configured provider becomes the fallback.
@@ -23,6 +30,11 @@ export function providersFromEnv(
   return providers;
 }
 
+/** Whether at least one provider key is configured. */
+export function isAIConfigured(): boolean {
+  return Boolean(process.env.GEMINI_API_KEY || process.env.GROQ_API_KEY);
+}
+
 let shared: AIManager | undefined;
 
 /**
@@ -32,4 +44,27 @@ let shared: AIManager | undefined;
 export function getAIManager(): AIManager {
   shared ??= new AIManager(providersFromEnv());
   return shared;
+}
+
+let lastHealth: { at: number; value: AIReachability } | undefined;
+
+/**
+ * Checks whether any configured provider answers a metadata request. Cached for a minute.
+ * @returns reachability without any provider name or error detail.
+ */
+export async function checkAIReachability(): Promise<AIReachability> {
+  if (lastHealth && Date.now() - lastHealth.at < HEALTH_CACHE_MS) return lastHealth.value;
+  const providers = providersFromEnv();
+  let value: AIReachability = providers.length === 0 ? "not_configured" : "unreachable";
+  for (const provider of providers) {
+    try {
+      await provider.ping(AbortSignal.timeout(HEALTH_TIMEOUT_MS));
+      value = "reachable";
+      break;
+    } catch {
+      continue;
+    }
+  }
+  lastHealth = { at: Date.now(), value };
+  return value;
 }

@@ -8,7 +8,8 @@ import {
 
 /** Default model when GROQ_MODEL is unset. */
 export const DEFAULT_GROQ_MODEL = "llama-3.3-70b-versatile";
-const GROQ_CHAT_URL = "https://api.groq.com/openai/v1/chat/completions";
+const GROQ_API_URL = "https://api.groq.com/openai/v1";
+const GROQ_CHAT_URL = `${GROQ_API_URL}/chat/completions`;
 const TEMPERATURE = 0.2;
 
 interface ChatCompletion {
@@ -62,6 +63,27 @@ export class GroqProvider implements AIProvider {
       const content = data.choices?.[0]?.message?.content;
       if (!content) throw new ProviderError("server", "Groq returned an empty response");
       return content;
+    } catch (error) {
+      throw toProviderError(error, signal);
+    }
+  }
+
+  /** Fetches model metadata, which confirms the key and model without generating. */
+  async ping(signal: AbortSignal): Promise<void> {
+    try {
+      const response = await this.fetchImpl(
+        `${GROQ_API_URL}/models/${encodeURIComponent(this.model)}`,
+        {
+          signal,
+          headers: { Authorization: `Bearer ${this.apiKey}` },
+        },
+      );
+      if (!response.ok) {
+        throw new ProviderError(
+          kindFromStatus(response.status),
+          `Groq returned ${response.status}`,
+        );
+      }
     } catch (error) {
       throw toProviderError(error, signal);
     }

@@ -1,12 +1,18 @@
-import { z } from "zod";
-import { MAX_PROVIDER_RETRIES, PROVIDER_TIMEOUT_MS, RETRY_BASE_DELAY_MS } from "@/lib/constants";
+import type { z } from "zod";
+import {
+  MAX_PROVIDER_RETRIES,
+  PROVIDER_MAX_CALL_MS,
+  PROVIDER_TIMEOUT_MS,
+  RETRY_BASE_DELAY_MS,
+} from "@/lib/constants";
 import { AppError } from "@/lib/errors";
 import { type AIProvider, ProviderError, toProviderError } from "./provider";
+import { toJsonSchema, validateOutput } from "./structured-output";
 
 /** How much of an invalid response is echoed back in the repair prompt. */
 const REPAIR_ECHO_CHARS = 4_000;
-/** How many validation issues are listed in the repair prompt. */
-const REPAIR_MAX_ISSUES = 12;
+/** How much of a provider error message is written to server logs. */
+const LOG_DETAIL_CHARS = 300;
 
 /** A model task: instructions, content and the schema its output must satisfy. */
 export interface ModelTask<T> {
@@ -19,6 +25,7 @@ export interface ModelTask<T> {
 export interface AIManagerOptions {
   maxRetries?: number;
   timeoutMs?: number;
+  maxCallMs?: number;
   baseDelayMs?: number;
   sleep?: (ms: number) => Promise<void>;
   random?: () => number;
@@ -26,25 +33,10 @@ export interface AIManagerOptions {
 
 const defaultSleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
-/**
- * Converts a Zod schema into the JSON Schema sent to providers.
- * @param schema - a model output schema.
- */
-export function toJsonSchema(schema: z.ZodType): Record<string, unknown> {
-  const { $schema: _schemaUri, ...jsonSchema } = z.toJSONSchema(schema, { io: "input" });
-  return jsonSchema;
-}
-
-function describeIssues(error: z.ZodError): string {
-  return error.issues
-    .slice(0, REPAIR_MAX_ISSUES)
-    .map((issue) => `- ${issue.path.join(".") || "(root)"}: ${issue.message}`)
-    .join("\n");
-}
-
-function parseJson(raw: string): unknown {
-  const trimmed = raw.trim().replace(/^```(?:json)?\s*|\s*```$/g, "");
-  return JSON.parse(trimmed);
+/** Server-log detail for a provider failure; truncated and never sent to the client. */
+function describeCause(error: ProviderError): string {
+  const cause = error.cause instanceof Error ? error.cause.message : "";
+  return cause.slice(0, LOG_DETAIL_CHARS);
 }
 
 /**
@@ -55,6 +47,7 @@ function parseJson(raw: string): unknown {
 export class AIManager {
   private readonly maxRetries: number;
   private readonly timeoutMs: number;
+  private readonly maxCallMs: number;
   private readonly baseDelayMs: number;
   private readonly sleep: (ms: number) => Promise<void>;
   private readonly random: () => number;
@@ -68,12 +61,13 @@ export class AIManager {
     }
     this.maxRetries = options.maxRetries ?? MAX_PROVIDER_RETRIES;
     this.timeoutMs = options.timeoutMs ?? PROVIDER_TIMEOUT_MS;
+    this.maxCallMs = options.maxCallMs ?? PROVIDER_MAX_CALL_MS;
     this.baseDelayMs = options.baseDelayMs ?? RETRY_BASE_DELAY_MS;
     this.sleep = options.sleep ?? defaultSleep;
     this.random = options.random ?? Math.random;
   }
 
-  /** Model names in fallback order, for the health check. */
+  /** Model names in fallback order. */
   get models(): string[] {
     return this.providers.map((provider) => provider.model);
   }
@@ -96,7 +90,7 @@ export class AIManager {
       } catch (error) {
         if (!(error instanceof ProviderError)) throw error;
         lastError = error;
-        console.warn(`[ai] provider ${provider.id} failed: ${error.kind}`);
+        console.warn(`[ai] provider ${provider.id} failed: ${error.kind}`, describeCause(error));
       }
     }
     throw new AppError(
@@ -112,7 +106,7 @@ export class AIManager {
     jsonSchema: Record<string, unknown>,
     raw: string,
   ): Promise<T> {
-    const first = this.validate(task.schema, raw);
+    const first = validateOutput(task.schema, raw);
     if (first.success) return first.data;
 
     const repairPrompt = [
@@ -122,32 +116,14 @@ export class AIManager {
       `Previous response (truncated):\n${raw.slice(0, REPAIR_ECHO_CHARS)}`,
       "Return the complete corrected JSON object only.",
     ].join("\n\n");
-    const repaired = this.validate(
-      task.schema,
-      await this.callWithRetry(provider, task.system, repairPrompt, jsonSchema),
-    );
+    const repairedRaw = await this.callWithRetry(provider, task.system, repairPrompt, jsonSchema);
+    const repaired = validateOutput(task.schema, repairedRaw);
     if (repaired.success) return repaired.data;
 
     throw new AppError(
       "AI_INVALID_OUTPUT",
       "The analysis came back in an unexpected format. Please try again.",
     );
-  }
-
-  private validate<T>(
-    schema: z.ZodType<T>,
-    raw: string,
-  ): { success: true; data: T } | { success: false; problem: string } {
-    let json: unknown;
-    try {
-      json = parseJson(raw);
-    } catch {
-      return { success: false, problem: "- (root): response was not valid JSON" };
-    }
-    const result = schema.safeParse(json);
-    return result.success
-      ? { success: true, data: result.data }
-      : { success: false, problem: describeIssues(result.error) };
   }
 
   private async callWithRetry(
@@ -169,6 +145,10 @@ export class AIManager {
     }
   }
 
+  /**
+   * One provider call under two timers: an idle timer that aborts when the provider sends
+   * nothing for `timeoutMs` (reset on each streamed chunk), and a hard cap of `maxCallMs`.
+   */
   private async callOnce(
     provider: AIProvider,
     system: string,
@@ -176,13 +156,26 @@ export class AIManager {
     jsonSchema: Record<string, unknown>,
   ): Promise<string> {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+    const abort = () => controller.abort();
+    let idleTimer = setTimeout(abort, this.timeoutMs);
+    const hardTimer = setTimeout(abort, this.maxCallMs);
+    const onActivity = () => {
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(abort, this.timeoutMs);
+    };
     try {
-      return await provider.generateJson({ system, prompt, jsonSchema, signal: controller.signal });
+      return await provider.generateJson({
+        system,
+        prompt,
+        jsonSchema,
+        signal: controller.signal,
+        onActivity,
+      });
     } catch (error) {
       throw toProviderError(error, controller.signal);
     } finally {
-      clearTimeout(timer);
+      clearTimeout(idleTimer);
+      clearTimeout(hardTimer);
     }
   }
 }

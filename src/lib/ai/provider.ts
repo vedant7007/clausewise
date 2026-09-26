@@ -6,8 +6,10 @@ export interface GenerateRequest {
   prompt: string;
   /** JSON Schema the response must satisfy. */
   jsonSchema: Record<string, unknown>;
-  /** Aborted by the manager when the per-call timeout expires. */
+  /** Aborted by the manager when the call goes idle for too long or hits its hard cap. */
   signal: AbortSignal;
+  /** Streaming providers call this for each chunk received, which resets the idle timer. */
+  onActivity?: () => void;
 }
 
 /** A model backend. Implementations return raw JSON text and never validate it. */
@@ -21,6 +23,11 @@ export interface AIProvider {
    * @throws ProviderError for every failure.
    */
   generateJson(request: GenerateRequest): Promise<string>;
+  /**
+   * Cheap reachability check that spends no generation quota.
+   * @throws ProviderError when the provider or model is unreachable.
+   */
+  ping(signal: AbortSignal): Promise<void>;
 }
 
 /** Why a provider call failed. Decides whether to retry, fall back or give up. */

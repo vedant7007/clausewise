@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { AIManager, toJsonSchema } from "@/lib/ai/ai-manager";
+import { AIManager } from "@/lib/ai/ai-manager";
+import { toJsonSchema } from "@/lib/ai/structured-output";
 import { type AIProvider, type GenerateRequest, ProviderError } from "@/lib/ai/provider";
 import { AppError } from "@/lib/errors";
 
@@ -14,6 +15,7 @@ function scriptedProvider(id: string, steps: Step[]) {
   const provider: AIProvider = {
     id,
     model: `${id}-model`,
+    async ping() {},
     async generateJson(request) {
       calls.push(request);
       const step = steps.shift() ?? new ProviderError("server", "exhausted");
@@ -111,6 +113,41 @@ describe("AIManager", () => {
   it("aborts a hanging call at the timeout and classifies it as a timeout", async () => {
     const { provider, calls } = scriptedProvider("p", ["hang", VALID]);
     const manager = new AIManager([provider], { ...fast, timeoutMs: 10 });
+    await expect(manager.generate(task)).resolves.toMatchObject({ answer: "yes" });
+    expect(calls[0]!.signal.aborted).toBe(true);
+  });
+
+  it("keeps a slow call alive while it keeps streaming, up to the hard cap", async () => {
+    const streaming: AIProvider = {
+      id: "s",
+      model: "s-model",
+      async ping() {},
+      async generateJson({ onActivity }) {
+        for (let i = 0; i < 5; i += 1) {
+          await new Promise((resolve) => setTimeout(resolve, 8));
+          onActivity?.();
+        }
+        return VALID;
+      },
+    };
+    const manager = new AIManager([streaming], { ...fast, timeoutMs: 20, maxCallMs: 1_000 });
+    await expect(manager.generate(task)).resolves.toMatchObject({ answer: "yes" });
+  });
+
+  it("aborts a streaming call that exceeds the hard cap", async () => {
+    const { provider, calls } = scriptedProvider("p", ["hang", VALID]);
+    const chatty: AIProvider = {
+      ...provider,
+      async generateJson(request) {
+        const timer = setInterval(() => request.onActivity?.(), 5);
+        try {
+          return await provider.generateJson(request);
+        } finally {
+          clearInterval(timer);
+        }
+      },
+    };
+    const manager = new AIManager([chatty], { ...fast, timeoutMs: 20, maxCallMs: 60 });
     await expect(manager.generate(task)).resolves.toMatchObject({ answer: "yes" });
     expect(calls[0]!.signal.aborted).toBe(true);
   });

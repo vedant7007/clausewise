@@ -1,0 +1,27 @@
+FAIR BASELINE: MUTUAL NON-DISCLOSURE AGREEMENT
+
+This reference text shows balanced terms commonly seen in mutual NDAs used for early business discussions. It is for comparison only and is not a template for any particular place.
+
+1. CONFIDENTIAL INFORMATION. Confidential Information means non-public information that one party (the Discloser) shares with the other (the Recipient) for the Purpose and that is marked confidential or would reasonably be understood to be confidential.
+
+2. EXCLUSIONS. Confidential Information does not include information that is or becomes public through no fault of the Recipient, was already known to the Recipient, is independently developed by the Recipient without using the Discloser's information, or is lawfully received from a third party.
+
+3. OBLIGATIONS. Each party, as Recipient, uses the other's Confidential Information only for the Purpose and protects it with reasonable care. Each party may share it with its employees and professional advisers, including lawyers and accountants, who need to know it and are bound by confidentiality.
+
+4. REQUIRED DISCLOSURE. A Recipient may disclose information when required by law or a court order, after giving the Discloser prompt notice where legally allowed.
+
+5. TERM. This Agreement covers disclosures made within one (1) year of the Effective Date. Confidentiality obligations last for three (3) years after each disclosure, and for trade secrets for as long as they remain trade secrets.
+
+6. RETURN OF MATERIALS. On written request, the Recipient returns or destroys the Discloser's materials within thirty (30) days, except copies kept by law or in routine backups, which remain confidential.
+
+7. OWNERSHIP. Each party keeps ownership of its own information and ideas. Nothing in this Agreement transfers ownership of any intellectual property, and any use of the other party's ideas requires a separate written agreement.
+
+8. NO OTHER RESTRICTIONS. This Agreement does not restrict either party from working with others or competing, provided it does not use the other party's Confidential Information.
+
+9. REMEDIES. A party harmed by a breach may seek injunctive relief and damages it can prove. Liability is mutual and each party's liability is subject to the same limits.
+
+10. INDEMNITY. Neither party indemnifies the other except for losses caused by its own proven breach.
+
+11. DISPUTES. Disputes go to a sole arbitrator jointly appointed by the parties, and each party bears its own costs unless the arbitrator decides otherwise.
+
+12. GENERAL. This Agreement is the entire agreement on its subject and may be changed only in writing signed by both parties.

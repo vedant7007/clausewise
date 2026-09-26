@@ -10,7 +10,7 @@ import type { OutputOptions, SampleId } from "@/lib/schemas/document";
 export type AnalysisSource =
   | { kind: "file"; file: File }
   | { kind: "sample"; sampleId: SampleId }
-  | { kind: "text"; text: string };
+  | { kind: "text"; text: string; name?: string };
 
 type Status =
   | { state: "idle" }
@@ -26,7 +26,10 @@ function toForm(source: AnalysisSource, options: OutputOptions): FormData {
   const form = new FormData();
   if (source.kind === "file") form.append("file", source.file);
   if (source.kind === "sample") form.append("sampleId", source.sampleId);
-  if (source.kind === "text") form.append("text", source.text);
+  if (source.kind === "text") {
+    form.append("text", source.text);
+    if (source.name) form.append("name", source.name);
+  }
   form.append("language", options.language);
   form.append("plainLanguage", String(options.plainLanguage));
   return form;

@@ -11,6 +11,7 @@ import {
 /** Headroom for multipart boundaries and form fields around the file itself. */
 const MULTIPART_OVERHEAD_BYTES = 64 * 1024;
 const PASTED_TEXT_NAME = "Pasted text";
+const MAX_NAME_CHARS = 255;
 
 /** Where the document to analyse comes from. */
 export type AnalyzeSource =
@@ -72,8 +73,13 @@ export async function readAnalyzeInput(request: Request): Promise<AnalyzeInput> 
   if (!parsedText.success) {
     throw new AppError("INVALID_INPUT", "Pasted text must be between 40 and 120,000 characters.");
   }
+  const name = form.get("name");
+  const displayName =
+    typeof name === "string" && name.trim()
+      ? name.trim().slice(0, MAX_NAME_CHARS)
+      : PASTED_TEXT_NAME;
   return {
-    source: { kind: "text", name: PASTED_TEXT_NAME, text: parsedText.data },
+    source: { kind: "text", name: displayName, text: parsedText.data },
     options: options.data,
   };
 }

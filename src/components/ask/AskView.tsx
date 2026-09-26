@@ -1,5 +1,6 @@
 "use client";
 
+import { FIELD_CLASS } from "@/components/ui/field";
 import { useId, useState } from "react";
 import { useSession } from "@/components/session/SessionProvider";
 import { NoDocumentState } from "@/components/session/NoDocumentState";
@@ -86,7 +87,7 @@ export function AskView() {
           maxLength={MAX_QUESTION_CHARS}
           rows={3}
           aria-describedby={countId}
-          className="w-full rounded-lg border border-line bg-paper p-3"
+          className={`${FIELD_CLASS} p-3`}
         />
         <p id={countId} className="text-xs text-muted">
           {trimmed.length}/{MAX_QUESTION_CHARS} characters

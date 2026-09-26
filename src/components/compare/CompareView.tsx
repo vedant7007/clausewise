@@ -1,5 +1,6 @@
 "use client";
 
+import { FIELD_CLASS } from "@/components/ui/field";
 import { useId, useState } from "react";
 import { GroundedBadge } from "@/components/analysis/GroundedBadge";
 import { useSession } from "@/components/session/SessionProvider";
@@ -103,7 +104,7 @@ export function CompareView() {
                 id={baselineId}
                 value={baseline}
                 onChange={(event) => setBaseline(event.target.value as SampleId)}
-                className="min-h-11 rounded-lg border border-line bg-surface px-3"
+                className={FIELD_CLASS}
               >
                 {SAMPLE_CATALOG.map((sample) => (
                   <option key={sample.id} value={sample.id}>

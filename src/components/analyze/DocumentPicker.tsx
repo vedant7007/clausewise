@@ -1,5 +1,6 @@
 "use client";
 
+import { FIELD_CLASS } from "@/components/ui/field";
 import { useId, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { FileDropzone } from "@/components/ui/FileDropzone";
@@ -40,7 +41,7 @@ export function DocumentPicker({ onSubmit }: { onSubmit: (source: AnalysisSource
             aria-describedby={countId}
             rows={8}
             maxLength={MAX_TEXT_CHARS}
-            className="w-full rounded-lg border border-line bg-paper p-3 text-sm"
+            className={`${FIELD_CLASS} p-3`}
           />
           <p id={countId} className="text-xs text-muted">
             {trimmed.toLocaleString("en-IN")} characters. Minimum {MIN_DOCUMENT_CHARS}, maximum{" "}

@@ -1,5 +1,6 @@
 "use client";
 
+import { FIELD_CLASS } from "./field";
 import { useId } from "react";
 import type { Language } from "@/lib/schemas/document";
 
@@ -27,7 +28,7 @@ export function LanguageSelect({
         id={id}
         value={value}
         onChange={(event) => onChange(event.target.value as Language)}
-        className="min-h-11 rounded-lg border border-line bg-surface px-3 text-sm"
+        className={FIELD_CLASS}
       >
         {LANGUAGES.map((language) => (
           <option key={language.value} value={language.value}>

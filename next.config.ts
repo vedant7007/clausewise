@@ -8,9 +8,7 @@ const nextConfig: NextConfig = {
     "/api/**": ["./src/data/samples/**", "./src/data/baselines/**", "./src/data/fixtures/**"],
   },
   async headers() {
-    return [
-      { source: "/:path*", headers: securityHeaders(process.env.NODE_ENV === "development") },
-    ];
+    return [{ source: "/:path*", headers: securityHeaders() }];
   },
 };
 

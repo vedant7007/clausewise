@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Public_Sans, Source_Serif_4 } from "next/font/google";
+import { connection } from "next/server";
 import type { ReactNode } from "react";
 import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
 import { FirstRunNotice } from "@/components/layout/FirstRunNotice";
@@ -18,7 +19,12 @@ export const metadata: Metadata = {
     "Understand rental agreements, job offers, NDAs and loan papers in plain English. See which clauses tilt against you, with every claim backed by a verified quote.",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+/**
+ * Pages render per request so Next.js can apply the CSP nonce set by the proxy to its inline
+ * scripts; a statically prerendered page could not carry a per-request nonce.
+ */
+export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+  await connection();
   return (
     <html lang="en" className={`${body.variable} ${heading.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col font-sans">

@@ -5,17 +5,25 @@ export interface HeaderEntry {
 }
 
 /**
- * Builds the Content-Security-Policy. Next.js injects inline bootstrap scripts, so
- * `'unsafe-inline'` is required for scripts without a nonce; development also needs
- * `'unsafe-eval'` for fast refresh. Everything else is locked to the same origin.
- * @param isDevelopment - whether the dev server is running.
+ * Builds a strict, nonce-based Content-Security-Policy for one request. Scripts run only with
+ * the per-request nonce (`'strict-dynamic'` lets those scripts load Next.js chunks); there is
+ * no `'unsafe-inline'` or `'unsafe-eval'` for scripts in production. Style elements also need
+ * the nonce. The single exception is `style-src-attr 'unsafe-inline'`: style attributes cannot
+ * execute code, and Next.js's route announcer relies on one.
+ * @param nonce - a fresh, unpredictable value for this request.
+ * @param isDevelopment - development additionally allows eval for React's debugging tools.
  */
-export function buildContentSecurityPolicy(isDevelopment: boolean): string {
-  const scriptSrc = ["'self'", "'unsafe-inline'", ...(isDevelopment ? ["'unsafe-eval'"] : [])];
+export function buildContentSecurityPolicy(nonce: string, isDevelopment: boolean): string {
   const directives: Record<string, string[]> = {
     "default-src": ["'self'"],
-    "script-src": scriptSrc,
-    "style-src": ["'self'", "'unsafe-inline'"],
+    "script-src": [
+      "'self'",
+      `'nonce-${nonce}'`,
+      "'strict-dynamic'",
+      ...(isDevelopment ? ["'unsafe-eval'"] : []),
+    ],
+    "style-src": ["'self'", `'nonce-${nonce}'`],
+    "style-src-attr": ["'unsafe-inline'"],
     "img-src": ["'self'", "data:", "blob:"],
     "font-src": ["'self'"],
     "connect-src": ["'self'"],
@@ -30,12 +38,19 @@ export function buildContentSecurityPolicy(isDevelopment: boolean): string {
 }
 
 /**
- * Security headers applied to every route.
- * @param isDevelopment - relaxes the CSP for the dev server only.
+ * Creates a random nonce for one request.
+ * @returns 128 bits of randomness, base64 encoded.
  */
-export function securityHeaders(isDevelopment: boolean): HeaderEntry[] {
+export function createNonce(): string {
+  return Buffer.from(crypto.getRandomValues(new Uint8Array(16))).toString("base64");
+}
+
+/**
+ * Static hardening headers applied to every route by next.config. The CSP is set per request
+ * by the proxy, because it carries a nonce.
+ */
+export function securityHeaders(): HeaderEntry[] {
   return [
-    { key: "Content-Security-Policy", value: buildContentSecurityPolicy(isDevelopment) },
     { key: "X-Frame-Options", value: "DENY" },
     { key: "X-Content-Type-Options", value: "nosniff" },
     { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },

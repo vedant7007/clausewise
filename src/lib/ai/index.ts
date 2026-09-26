@@ -39,7 +39,14 @@ export function providersFromEnv(
     for (const model of new Set(models)) providers.push(new GeminiProvider(geminiKey, model));
   }
   if (env.GROQ_API_KEY) {
-    providers.push(new GroqProvider(env.GROQ_API_KEY, env.GROQ_MODEL || undefined));
+    providers.push(
+      new GroqProvider(
+        env.GROQ_API_KEY,
+        env.GROQ_MODEL || undefined,
+        fetch,
+        env.GROQ_REASONING_EFFORT || undefined,
+      ),
+    );
   }
   return providers;
 }

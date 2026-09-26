@@ -169,3 +169,14 @@ describe("toJsonSchema", () => {
     expect(schema).toMatchObject({ type: "object", required: ["answer", "score"] });
   });
 });
+
+describe("validateOutput", () => {
+  it("ignores a reasoning model's thinking block before the JSON", async () => {
+    const { validateOutput } = await import("@/lib/ai/structured-output");
+    const raw = `<think>The user wants JSON.</think>\n${VALID}`;
+    expect(validateOutput(Schema, raw)).toEqual({
+      success: true,
+      data: { answer: "yes", score: 1 },
+    });
+  });
+});

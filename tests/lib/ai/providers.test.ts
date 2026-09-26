@@ -59,8 +59,11 @@ describe("GroqProvider", () => {
       messages: { content: string }[];
     };
     expect(body.model).toBe("test-model");
-    expect(body.response_format).toEqual({ type: "json_object" });
-    expect(body.messages[0]!.content).toContain('{"type":"object"}');
+    expect(body.response_format).toMatchObject({
+      type: "json_schema",
+      json_schema: { schema: { type: "object" } },
+    });
+    expect(body.messages[0]!.content).toBe("sys");
   });
 
   it("maps HTTP errors to classified ProviderErrors", async () => {
@@ -80,11 +83,11 @@ describe("providersFromEnv", () => {
   it("orders Gemini first and Groq as fallback, using whichever keys exist", async () => {
     const { providersFromEnv } = await import("@/lib/ai");
     expect(providersFromEnv({ GROQ_API_KEY: "g" }).map((p) => p.model)).toEqual([
-      "llama-3.3-70b-versatile",
+      "qwen/qwen3.8-27b",
     ]);
     expect(
       providersFromEnv({ GEMINI_API_KEY: "a", GROQ_API_KEY: "b" }).map((p) => p.model),
-    ).toEqual(["gemini-2.5-flash", "llama-3.3-70b-versatile"]);
+    ).toEqual(["gemini-2.5-flash", "qwen/qwen3.8-27b"]);
     expect(providersFromEnv({})).toEqual([]);
   });
 

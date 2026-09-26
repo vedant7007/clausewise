@@ -44,7 +44,8 @@ export type Brief = z.infer<typeof BriefSchema>;
 
 export const ModelClauseSchema = z.object({
   title: text,
-  category: ClauseCategorySchema,
+  // An unknown category is display metadata, so it degrades to "other" instead of failing.
+  category: ClauseCategorySchema.catch("other"),
   meaning: text.describe("Plain-English meaning of the clause"),
   tilt: TiltSchema.describe("Who the clause favours, from the reader's point of view"),
   tiltReason: text.describe("One line explaining the tilt"),

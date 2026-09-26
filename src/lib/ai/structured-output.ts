@@ -4,7 +4,7 @@ import { z } from "zod";
 const MAX_REPORTED_ISSUES = 12;
 
 /**
- * Size and pattern keywords are enforced by Zod after the response arrives. Sending them to
+ * Size, pattern and default keywords are enforced by Zod after the response arrives. Sending them to
  * the provider bloats constrained decoding (Gemini rejects such schemas as "too many states").
  */
 const LOCAL_ONLY_KEYWORDS = new Set([
@@ -15,6 +15,7 @@ const LOCAL_ONLY_KEYWORDS = new Set([
   "maxLength",
   "pattern",
   "format",
+  "default",
 ]);
 
 function stripLocalOnly(node: unknown): unknown {
@@ -39,8 +40,12 @@ export function toJsonSchema(schema: z.ZodType): Record<string, unknown> {
 /** Outcome of validating raw model text. `problem` is phrased for a repair prompt. */
 export type ValidationOutcome<T> = { success: true; data: T } | { success: false; problem: string };
 
+/** Reasoning models may prefix their answer with a visible thinking block. */
+const REASONING_BLOCK = /<think>[\s\S]*?<\/think>/g;
+const MARKDOWN_FENCE = /^```(?:json)?\s*|\s*```$/g;
+
 /**
- * Parses raw model text as JSON (tolerating a markdown fence) and validates it.
+ * Parses raw model text as JSON (tolerating a thinking block or markdown fence) and validates it.
  * @param schema - expected output schema.
  * @param raw - text returned by a provider.
  * @returns the data, or a readable list of problems. Never throws.
@@ -48,7 +53,7 @@ export type ValidationOutcome<T> = { success: true; data: T } | { success: false
 export function validateOutput<T>(schema: z.ZodType<T>, raw: string): ValidationOutcome<T> {
   let json: unknown;
   try {
-    json = JSON.parse(raw.trim().replace(/^```(?:json)?\s*|\s*```$/g, ""));
+    json = JSON.parse(raw.replace(REASONING_BLOCK, "").trim().replace(MARKDOWN_FENCE, ""));
   } catch {
     return { success: false, problem: "- (root): response was not valid JSON" };
   }

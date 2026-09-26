@@ -198,3 +198,12 @@ describe("Negotiation schemas", () => {
     expect(NegotiationModelOutputSchema.safeParse(output).success).toBe(true);
   });
 });
+
+describe("clause category tolerance", () => {
+  it("maps an unknown clause category to other instead of failing", () => {
+    const output = structuredClone(modelAnalysis);
+    output.clauses[0]!.category = "intellectual property";
+    const parsed = AnalysisModelOutputSchema.safeParse(output);
+    expect(parsed.success && parsed.data.clauses[0]!.category).toBe("other");
+  });
+});

@@ -6,28 +6,45 @@ import {
   toProviderError,
 } from "./provider";
 
-/** Default model when GROQ_MODEL is unset. */
-export const DEFAULT_GROQ_MODEL = "llama-3.3-70b-versatile";
+/**
+ * Default when GROQ_MODEL is unset, chosen from the models the deployment key can use. Its free
+ * tier suits Q&A and negotiation; production sets GROQ_MODEL to a larger model for full analyses.
+ */
+export const DEFAULT_GROQ_MODEL = "qwen/qwen3.8-27b";
 const GROQ_API_URL = "https://api.groq.com/openai/v1";
 const GROQ_CHAT_URL = `${GROQ_API_URL}/chat/completions`;
 const TEMPERATURE = 0.2;
+/**
+ * Room for a full analysis. Groq defaults to about 3,000 completion tokens, which truncates it;
+ * with a typical 3,000-token prompt this also stays under the free tier's 8,000 tokens per minute.
+ */
+const MAX_COMPLETION_TOKENS = 5_000;
 
 interface ChatCompletion {
-  choices?: { message?: { content?: string | null } }[];
+  choices?: { message?: { content?: string | null }; finish_reason?: string }[];
+  usage?: { prompt_tokens?: number; completion_tokens?: number };
 }
 
+/** Groq's code for a generation that did not match the schema; a retry can succeed. */
+const JSON_VALIDATE_FAILED = "json_validate_failed";
+
 /**
- * Groq's OpenAI-compatible chat API in JSON-object mode. Groq's JSON mode does not take a
- * schema, so the schema is embedded in the system message; the manager validates the result.
+ * Groq's OpenAI-compatible chat API with structured outputs: the response JSON Schema is sent
+ * as `response_format.json_schema`, and the manager still validates the result with Zod.
  */
 export class GroqProvider implements AIProvider {
-  readonly id = "groq";
-
   constructor(
     private readonly apiKey: string,
     readonly model: string = DEFAULT_GROQ_MODEL,
     private readonly fetchImpl: typeof fetch = fetch,
+    /** Optional `reasoning_effort` for reasoning models; lower effort leaves room for the answer. */
+    private readonly reasoningEffort?: string,
   ) {}
+
+  /** Log identifier naming the model, for example "groq:qwen/qwen3.8-27b". */
+  get id(): string {
+    return `groq:${this.model}`;
+  }
 
   /**
    * @returns raw JSON text from the model.
@@ -42,25 +59,34 @@ export class GroqProvider implements AIProvider {
         body: JSON.stringify({
           model: this.model,
           temperature: TEMPERATURE,
-          response_format: { type: "json_object" },
+          max_completion_tokens: MAX_COMPLETION_TOKENS,
+          ...(this.reasoningEffort ? { reasoning_effort: this.reasoningEffort } : {}),
+          response_format: {
+            type: "json_schema",
+            json_schema: { name: "clausewise_output", schema: jsonSchema, strict: false },
+          },
           messages: [
-            {
-              role: "system",
-              content: `${system}\n\nRespond with one JSON object that satisfies this JSON Schema:\n${JSON.stringify(jsonSchema)}`,
-            },
+            { role: "system", content: system },
             { role: "user", content: prompt },
           ],
         }),
       });
       if (!response.ok) {
         const body = await response.text();
-        throw new ProviderError(
-          kindFromStatus(response.status, body),
-          `Groq returned ${response.status}`,
-        );
+        const kind = body.includes(JSON_VALIDATE_FAILED)
+          ? "server"
+          : kindFromStatus(response.status, body);
+        throw new ProviderError(kind, `Groq returned ${response.status}: ${body}`);
       }
       const data = (await response.json()) as ChatCompletion;
-      const content = data.choices?.[0]?.message?.content;
+      const choice = data.choices?.[0];
+      if (choice?.finish_reason && choice.finish_reason !== "stop") {
+        console.warn(
+          `[ai] ${this.id} stopped early: ${choice.finish_reason}`,
+          JSON.stringify(data.usage),
+        );
+      }
+      const content = choice?.message?.content;
       if (!content) throw new ProviderError("server", "Groq returned an empty response");
       return content;
     } catch (error) {

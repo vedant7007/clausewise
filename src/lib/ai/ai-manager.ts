@@ -35,8 +35,8 @@ const defaultSleep = (ms: number) => new Promise<void>((resolve) => setTimeout(r
 
 /** Server-log detail for a provider failure; truncated and never sent to the client. */
 function describeCause(error: ProviderError): string {
-  const cause = error.cause instanceof Error ? error.cause.message : "";
-  return cause.slice(0, LOG_DETAIL_CHARS);
+  const detail = error.cause instanceof Error ? error.cause.message : error.message;
+  return detail.slice(0, LOG_DETAIL_CHARS);
 }
 
 /**
@@ -86,7 +86,9 @@ export class AIManager {
     for (const provider of this.providers) {
       try {
         const raw = await this.callWithRetry(provider, task.system, task.prompt, jsonSchema);
-        return await this.validateOrRepair(provider, task, jsonSchema, raw);
+        const data = await this.validateOrRepair(provider, task, jsonSchema, raw);
+        if (provider !== this.providers[0]) console.warn(`[ai] served by fallback ${provider.id}`);
+        return data;
       } catch (error) {
         if (!(error instanceof ProviderError)) throw error;
         lastError = error;
@@ -108,6 +110,10 @@ export class AIManager {
   ): Promise<T> {
     const first = validateOutput(task.schema, raw);
     if (first.success) return first.data;
+    console.warn(
+      `[ai] ${provider.id} output failed validation; repairing`,
+      first.problem.slice(0, LOG_DETAIL_CHARS),
+    );
 
     const repairPrompt = [
       task.prompt,

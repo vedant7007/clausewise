@@ -4,4 +4,5 @@ export const NAV_ITEMS: readonly { href: string; label: string }[] = [
   { href: "/ask", label: "Ask" },
   { href: "/compare", label: "Compare" },
   { href: "/prep", label: "Lawyer prep" },
+  { href: "/about", label: "About" },
 ];

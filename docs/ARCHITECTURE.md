@@ -108,13 +108,13 @@ up when one model's daily quota is spent.
 
 `AIManager` wraps every call:
 
-| Concern | Behaviour |
-| --- | --- |
-| Timeout | Aborted after 25 s without data (reset on each streamed chunk) and after a 90 s hard cap |
-| Retry | Up to 2 retries for rate limits, timeouts, network and 5xx errors, exponential backoff with jitter |
-| Fallback | Auth, bad-request and daily-quota errors move straight to the next provider |
-| Repair | One retry with the Zod issues and the invalid output fed back |
-| Errors | Callers only see `AppError` codes `AI_UNAVAILABLE` or `AI_INVALID_OUTPUT` with user-safe messages |
+| Concern  | Behaviour                                                                                          |
+| -------- | -------------------------------------------------------------------------------------------------- |
+| Timeout  | Aborted after 25 s without data (reset on each streamed chunk) and after a 90 s hard cap           |
+| Retry    | Up to 2 retries for rate limits, timeouts, network and 5xx errors, exponential backoff with jitter |
+| Fallback | Auth, bad-request and daily-quota errors move straight to the next provider                        |
+| Repair   | One retry with the Zod issues and the invalid output fed back                                      |
+| Errors   | Callers only see `AppError` codes `AI_UNAVAILABLE` or `AI_INVALID_OUTPUT` with user-safe messages  |
 
 The JSON Schema sent to providers is generated from the Zod schema with size and pattern keywords
 removed; Gemini rejects heavily constrained schemas, and Zod enforces those limits locally anyway.

@@ -32,31 +32,33 @@ ClauseWise gives that first read to anyone, for free, in minutes, in English, Hi
 
 What makes it different from pasting a contract into a chatbot:
 
-| Differentiator | What it means |
-| --- | --- |
-| **Clause Ledger and Tilt Meter** | Every material clause is labelled as favouring you, neutral, favouring the other side, or heavily favouring the other side, with a one-line reason. A **balance score from 0 to 100** is then computed **deterministically in TypeScript** from those labels and category weights. The model never picks the number. |
-| **Verified evidence anchoring** | The model must quote the document for every clause, risk, deadline and answer. A deterministic verifier checks each quote is an exact substring of your document (ignoring only case, whitespace and curly quotes). Anything it cannot find is **dropped and counted**, and the UI shows "Grounded: N/M claims verified" plus a "Show source" disclosure with the exact character offset. |
-| **PII redaction before inference** | Emails, phone numbers, Aadhaar-like and PAN-like numbers and long account-style digit runs are masked **before** text leaves the server, then restored in the output. The user sees "N personal details redacted before analysis". |
-| **Negotiation Kit** | For each unfair clause: a fairer rewrite and a short, polite, ready-to-send message, each with copy to clipboard. |
-| **Offline-safe demo** | If the model is unavailable (quota, auth, network), the bundled samples fall back to saved analyses produced by the same pipeline, with a clear notice. Fixtures are never used for user uploads and never presented as live. |
+| Differentiator                     | What it means                                                                                                                                                                                                                                                                                                                                                                             |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Clause Ledger and Tilt Meter**   | Every material clause is labelled as favouring you, neutral, favouring the other side, or heavily favouring the other side, with a one-line reason. A **balance score from 0 to 100** is then computed **deterministically in TypeScript** from those labels and category weights. The model never picks the number.                                                                      |
+| **Verified evidence anchoring**    | The model must quote the document for every clause, risk, deadline and answer. A deterministic verifier checks each quote is an exact substring of your document (ignoring only case, whitespace and curly quotes). Anything it cannot find is **dropped and counted**, and the UI shows "Grounded: N/M claims verified" plus a "Show source" disclosure with the exact character offset. |
+| **PII redaction before inference** | Emails, phone numbers, Aadhaar-like and PAN-like numbers and long account-style digit runs are masked **before** text leaves the server, then restored in the output. The user sees "N personal details redacted before analysis".                                                                                                                                                        |
+| **Negotiation Kit**                | For each unfair clause: a fairer rewrite and a short, polite, ready-to-send message, each with copy to clipboard.                                                                                                                                                                                                                                                                         |
+| **Offline-safe demo**              | If the model is unavailable (quota, auth, network), the bundled samples fall back to saved analyses produced by the same pipeline, with a clear notice. Fixtures are never used for user uploads and never presented as live.                                                                                                                                                             |
 
 ## Screenshots
 
-| | |
-| --- | --- |
-| ![Landing page with sample documents](docs/images/landing.png) | ![Analysis overview with brief, balance meter and grounding badge](docs/images/analysis-overview.png) |
-| **Landing page.** Try a sample or upload your own document. | **Overview.** Plain-English brief, balance score and verification badge. |
-| ![Clause ledger with a verified source quote expanded](docs/images/clause-ledger.png) | ![Negotiation kit with fairer wording and a ready-to-send message](docs/images/negotiation-kit.png) |
-| **Clause ledger.** Tilt per clause, with the exact source quote and offset. | **Negotiation kit.** Fairer wording and a polite message, ready to copy. |
+|                                                                                       |                                                                                                       |
+| ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| ![Landing page with sample documents](docs/images/landing.png)                        | ![Analysis overview with brief, balance meter and grounding badge](docs/images/analysis-overview.png) |
+| **Landing page.** Try a sample or upload your own document.                           | **Overview.** Plain-English brief, balance score and verification badge.                              |
+| ![Clause ledger with a verified source quote expanded](docs/images/clause-ledger.png) | ![Negotiation kit with fairer wording and a ready-to-send message](docs/images/negotiation-kit.png)   |
+| **Clause ledger.** Tilt per clause, with the exact source quote and offset.           | **Negotiation kit.** Fairer wording and a polite message, ready to copy.                              |
 
 ## Feature walkthrough
 
 ### 1. Plain-English brief
+
 An executive summary at roughly an 8th-grade reading level, the parties and their roles, what the
 document does, five bullets on what you are agreeing to, and the detected document type (rental,
 employment, NDA, loan, service or other).
 
 ### 2. Clause Ledger and Tilt Meter
+
 Each clause card shows its title, category (termination, payment, liability, confidentiality,
 renewal, jurisdiction, indemnity, penalty, notice, other), a plain meaning and a tilt with its
 reason. The balance score is a category-weighted average of tilt points
@@ -65,44 +67,52 @@ reason. The balance score is a category-weighted average of tilt points
 number and a text verdict, never colour alone.
 
 ### 3. Verified evidence anchoring
+
 [`evidence-verifier.ts`](src/lib/analysis/evidence-verifier.ts) normalises the source once, maps
 every normalised character back to its original offset, and accepts a quote only if it is a
 contiguous substring of at least 8 characters. Paraphrases, partial overlaps and invented text are
 rejected. The verified span shown to the user is taken from **your document**, not from the model.
 
 ### 4. Risk Radar
+
 Risks are rated HIGH, MEDIUM, LOW or INFO and sorted by severity. Each explains what the clause
 says, what could realistically go wrong, who it hurts and a practical next step. Severity is
 conveyed by a text label, an icon and colour together.
 
 ### 5. Obligations and deadline timeline
+
 Who must do what, by when, and the consequence of missing it. Relative deadlines ("within 30 days of
 termination") stay in the document's words; calendar dates are parsed. Export the dated deadlines
 as an **.ics** file, hand-written client-side with CRLF line endings, RFC 5545 escaping and line
 folding ([`ics.ts`](src/lib/export/ics.ts)), or everything as a Markdown checklist.
 
 ### 6. Compare mode
+
 Compare two versions of a document, or compare your document with a bundled **fair baseline** for
 rental, employment or NDA ([`src/data/baselines`](src/data/baselines)). Differences are classified
 ADDED, REMOVED or MODIFIED, rated HIGH, MEDIUM or LOW, and explained as "what this change means for
 you". A difference is kept only if every quote it cites is found in the matching document.
 
 ### 7. Grounded Q&A
+
 Answers come only from the document, with verified supporting quotes and a HIGH, MEDIUM or LOW
 confidence. If the document is silent, ClauseWise says so. Questions such as "should I sue?" or
 "will I win?" are declined politely with the relevant clauses and a pointer to a lawyer or legal
 aid. An answer that claims support but has no verifiable quote is downgraded to LOW confidence.
 
 ### 8. Negotiation Kit
+
 Generated on demand for every clause that tilts against you: a balanced rewrite and a 60 to 120
 word message you can send as is.
 
 ### 9. Lawyer Prep Pack
+
 The most important questions to ask a lawyer, gaps in the document, documents to bring, key risks
 and a one-page neutral case summary. Download it as Markdown or print it; a dedicated `@media print`
 stylesheet produces a clean handout.
 
 ### Inclusion and safety
+
 - **Languages:** English, Hindi and Telugu output; legal terms keep the English word in brackets
   on first use. **Plain-language mode** rewrites explanations at a simpler reading level, and a
   finished analysis can be re-explained without re-uploading.
@@ -151,14 +161,14 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full design.
 All calls go through [`AIManager`](src/lib/ai/ai-manager.ts), which sends a structural JSON Schema
 generated from the Zod output schema and validates every response with `safeParse`.
 
-| Provider and model | Role | Feature it powers | Files |
-| --- | --- | --- | --- |
-| Google Gemini **`gemini-2.5-flash`** (via `@google/genai`, JSON mode, streamed) | Primary model (`GEMINI_MODEL`) | Brief, clause ledger, risks, obligations and prep pack in **one** consolidated call | [`prompts/analyze.ts`](src/lib/prompts/analyze.ts), [`services/analyze-service.ts`](src/lib/services/analyze-service.ts) |
-| Same | Primary model | Grounded Q&A | [`prompts/ask.ts`](src/lib/prompts/ask.ts), [`services/ask-service.ts`](src/lib/services/ask-service.ts) |
-| Same | Primary model | Compare mode and fair-baseline comparison | [`prompts/compare.ts`](src/lib/prompts/compare.ts), [`services/compare-service.ts`](src/lib/services/compare-service.ts) |
-| Same | Primary model | Negotiation Kit | [`prompts/negotiate.ts`](src/lib/prompts/negotiate.ts), [`services/negotiate-service.ts`](src/lib/services/negotiate-service.ts) |
-| Gemini **`gemini-3-flash-preview`**, **`gemini-3.1-flash-lite`**, **`gemini-flash-lite-latest`** | Fallback chain (`GEMINI_FALLBACK_MODELS`), each with its own free-tier quota | All of the above, when the primary is out of quota or unavailable | [`ai/index.ts`](src/lib/ai/index.ts), [`ai/gemini-provider.ts`](src/lib/ai/gemini-provider.ts) |
-| Groq **`llama-3.3-70b-versatile`** (OpenAI-compatible API, JSON mode) | Optional final fallback, enabled only when `GROQ_API_KEY` is set | All of the above | [`ai/groq-provider.ts`](src/lib/ai/groq-provider.ts) |
+| Provider and model                                                                               | Role                                                                         | Feature it powers                                                                   | Files                                                                                                                            |
+| ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Google Gemini **`gemini-2.5-flash`** (via `@google/genai`, JSON mode, streamed)                  | Primary model (`GEMINI_MODEL`)                                               | Brief, clause ledger, risks, obligations and prep pack in **one** consolidated call | [`prompts/analyze.ts`](src/lib/prompts/analyze.ts), [`services/analyze-service.ts`](src/lib/services/analyze-service.ts)         |
+| Same                                                                                             | Primary model                                                                | Grounded Q&A                                                                        | [`prompts/ask.ts`](src/lib/prompts/ask.ts), [`services/ask-service.ts`](src/lib/services/ask-service.ts)                         |
+| Same                                                                                             | Primary model                                                                | Compare mode and fair-baseline comparison                                           | [`prompts/compare.ts`](src/lib/prompts/compare.ts), [`services/compare-service.ts`](src/lib/services/compare-service.ts)         |
+| Same                                                                                             | Primary model                                                                | Negotiation Kit                                                                     | [`prompts/negotiate.ts`](src/lib/prompts/negotiate.ts), [`services/negotiate-service.ts`](src/lib/services/negotiate-service.ts) |
+| Gemini **`gemini-3-flash-preview`**, **`gemini-3.1-flash-lite`**, **`gemini-flash-lite-latest`** | Fallback chain (`GEMINI_FALLBACK_MODELS`), each with its own free-tier quota | All of the above, when the primary is out of quota or unavailable                   | [`ai/index.ts`](src/lib/ai/index.ts), [`ai/gemini-provider.ts`](src/lib/ai/gemini-provider.ts)                                   |
+| Groq **`llama-3.3-70b-versatile`** (OpenAI-compatible API, JSON mode)                            | Optional final fallback, enabled only when `GROQ_API_KEY` is set             | All of the above                                                                    | [`ai/groq-provider.ts`](src/lib/ai/groq-provider.ts)                                                                             |
 
 The primary model was verified against the deployment key during setup: it lists as available and
 returns schema-constrained JSON. What the model **does not** do: compute the balance score, decide
@@ -167,14 +177,14 @@ TypeScript.
 
 ## Rubric mapping
 
-| Criterion | What was done | Evidence |
-| --- | --- | --- |
-| **Problem statement alignment** | Helps people understand (brief, ledger, risks, timeline), compare (versions and fair baselines) and navigate (Q&A, negotiation kit, lawyer prep pack) legal documents; information only, never advice; Hindi and Telugu plus plain-language mode for access. | [`src/app`](src/app), [`prompts/system-policy.ts`](src/lib/prompts/system-policy.ts), [`prompts/ask.ts`](src/lib/prompts/ask.ts), [`app/disclaimer/page.tsx`](src/app/disclaimer/page.tsx) |
-| **Code quality** | Strict TypeScript with `noUncheckedIndexedAccess`, zero `any`, Zod as the single source of truth for types, thin route handlers over services, one `AppError` type, JSDoc on exported functions, named constants, small single-purpose files, CI on every push. | [`tsconfig.json`](tsconfig.json), [`eslint.config.mjs`](eslint.config.mjs), [`lib/schemas`](src/lib/schemas), [`lib/errors.ts`](src/lib/errors.ts), [`lib/http/model-route.ts`](src/lib/http/model-route.ts), [`.github/workflows/ci.yml`](.github/workflows/ci.yml) |
-| **Security** | PII redaction before inference; prompt-injection defence with an instruction hierarchy, fenced untrusted content and detection counts; magic-byte, MIME, extension and size validation; per-IP rate limiting with `Retry-After`; CSP and hardening headers; keys server-only; no stack traces or provider details reach the client; no document storage. | [`security/`](src/lib/security), [`parsers/`](src/lib/parsers), [`http/responses.ts`](src/lib/http/responses.ts), [`next.config.ts`](next.config.ts), [SECURITY.md](SECURITY.md) |
-| **Efficiency** | One consolidated analysis call; streamed staged progress; bounded context with head-and-tail truncation; minimal model thinking; per-model fallback instead of failure; `next/dynamic` for compare and prep; `next/font`; server components by default; memoised derived values. | [`analyze-service.ts`](src/lib/services/analyze-service.ts), [`utils/text.ts`](src/lib/utils/text.ts), [`http/ndjson.ts`](src/lib/http/ndjson.ts), [`app/compare/page.tsx`](src/app/compare/page.tsx) |
-| **Testing** | 196 tests across 23 files: unit tests for every core library, service tests with a fake model, HTTP and client tests, and component tests with an axe assertion; coverage thresholds enforced in CI. | [`tests/`](tests), [`vitest.config.mts`](vitest.config.mts) |
-| **Accessibility** | WCAG 2.1 AA: skip link, landmarks, one `h1` per page, visible focus rings, 44 px targets, ARIA tabs with keyboard support, native `details` and `dialog`, live regions for async results, labelled controls, reduced motion, dark mode, and meaning never carried by colour alone. | [`components/ui`](src/components/ui), [`components/layout`](src/components/layout), [`tests/components`](tests/components), [Accessibility](#accessibility) |
+| Criterion                       | What was done                                                                                                                                                                                                                                                                                                                                            | Evidence                                                                                                                                                                                                                                                             |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Problem statement alignment** | Helps people understand (brief, ledger, risks, timeline), compare (versions and fair baselines) and navigate (Q&A, negotiation kit, lawyer prep pack) legal documents; information only, never advice; Hindi and Telugu plus plain-language mode for access.                                                                                             | [`src/app`](src/app), [`prompts/system-policy.ts`](src/lib/prompts/system-policy.ts), [`prompts/ask.ts`](src/lib/prompts/ask.ts), [`app/disclaimer/page.tsx`](src/app/disclaimer/page.tsx)                                                                           |
+| **Code quality**                | Strict TypeScript with `noUncheckedIndexedAccess`, zero `any`, Zod as the single source of truth for types, thin route handlers over services, one `AppError` type, JSDoc on exported functions, named constants, small single-purpose files, CI on every push.                                                                                          | [`tsconfig.json`](tsconfig.json), [`eslint.config.mjs`](eslint.config.mjs), [`lib/schemas`](src/lib/schemas), [`lib/errors.ts`](src/lib/errors.ts), [`lib/http/model-route.ts`](src/lib/http/model-route.ts), [`.github/workflows/ci.yml`](.github/workflows/ci.yml) |
+| **Security**                    | PII redaction before inference; prompt-injection defence with an instruction hierarchy, fenced untrusted content and detection counts; magic-byte, MIME, extension and size validation; per-IP rate limiting with `Retry-After`; CSP and hardening headers; keys server-only; no stack traces or provider details reach the client; no document storage. | [`security/`](src/lib/security), [`parsers/`](src/lib/parsers), [`http/responses.ts`](src/lib/http/responses.ts), [`next.config.ts`](next.config.ts), [SECURITY.md](SECURITY.md)                                                                                     |
+| **Efficiency**                  | One consolidated analysis call; streamed staged progress; bounded context with head-and-tail truncation; minimal model thinking; per-model fallback instead of failure; `next/dynamic` for compare and prep; `next/font`; server components by default; memoised derived values.                                                                         | [`analyze-service.ts`](src/lib/services/analyze-service.ts), [`utils/text.ts`](src/lib/utils/text.ts), [`http/ndjson.ts`](src/lib/http/ndjson.ts), [`app/compare/page.tsx`](src/app/compare/page.tsx)                                                                |
+| **Testing**                     | 196 tests across 23 files: unit tests for every core library, service tests with a fake model, HTTP and client tests, and component tests with an axe assertion; coverage thresholds enforced in CI.                                                                                                                                                     | [`tests/`](tests), [`vitest.config.mts`](vitest.config.mts)                                                                                                                                                                                                          |
+| **Accessibility**               | WCAG 2.1 AA: skip link, landmarks, one `h1` per page, visible focus rings, 44 px targets, ARIA tabs with keyboard support, native `details` and `dialog`, live regions for async results, labelled controls, reduced motion, dark mode, and meaning never carried by colour alone.                                                                       | [`components/ui`](src/components/ui), [`components/layout`](src/components/layout), [`tests/components`](tests/components), [Accessibility](#accessibility)                                                                                                          |
 
 ## Getting started
 
@@ -189,24 +199,24 @@ cp .env.example .env.local      # then add your key(s)
 npm run dev                     # http://localhost:3000
 ```
 
-| Command | Purpose |
-| --- | --- |
-| `npm run dev` | Development server |
-| `npm run lint` | ESLint (zero errors enforced) |
-| `npm run typecheck` | TypeScript in strict mode |
-| `npm run test` | Vitest unit, service and component tests |
-| `npm run test:coverage` | Tests with coverage thresholds |
-| `npm run build` | Production build |
+| Command                 | Purpose                                  |
+| ----------------------- | ---------------------------------------- |
+| `npm run dev`           | Development server                       |
+| `npm run lint`          | ESLint (zero errors enforced)            |
+| `npm run typecheck`     | TypeScript in strict mode                |
+| `npm run test`          | Vitest unit, service and component tests |
+| `npm run test:coverage` | Tests with coverage thresholds           |
+| `npm run build`         | Production build                         |
 
 ## Environment variables
 
-| Variable | Required | Description |
-| --- | --- | --- |
-| `GEMINI_API_KEY` | One of the two keys | Google Gemini API key. Server-side only. |
-| `GEMINI_MODEL` | No | Primary Gemini model. Defaults to `gemini-2.5-flash`. |
-| `GEMINI_FALLBACK_MODELS` | No | Comma-separated Gemini models tried in order if the primary fails, for example `gemini-3-flash-preview,gemini-3.1-flash-lite`. |
-| `GROQ_API_KEY` | One of the two keys | Groq API key. Used as primary if it is the only key, otherwise as the last fallback. |
-| `GROQ_MODEL` | No | Groq model. Defaults to `llama-3.3-70b-versatile`. |
+| Variable                 | Required            | Description                                                                                                                    |
+| ------------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `GEMINI_API_KEY`         | One of the two keys | Google Gemini API key. Server-side only.                                                                                       |
+| `GEMINI_MODEL`           | No                  | Primary Gemini model. Defaults to `gemini-2.5-flash`.                                                                          |
+| `GEMINI_FALLBACK_MODELS` | No                  | Comma-separated Gemini models tried in order if the primary fails, for example `gemini-3-flash-preview,gemini-3.1-flash-lite`. |
+| `GROQ_API_KEY`           | One of the two keys | Groq API key. Used as primary if it is the only key, otherwise as the last fallback.                                           |
+| `GROQ_MODEL`             | No                  | Groq model. Defaults to `llama-3.3-70b-versatile`.                                                                             |
 
 No variable is exposed to the browser; there are no `NEXT_PUBLIC_` secrets.
 
@@ -219,9 +229,9 @@ npm run test:coverage   # with thresholds: lines 70, functions 70, statements 70
 
 Current coverage (`src/lib` and `src/components`):
 
-| Statements | Branches | Functions | Lines |
-| --- | --- | --- | --- |
-| 86.07% | 75.04% | 84.64% | 87.23% |
+| Statements | Branches | Functions | Lines  |
+| ---------- | -------- | --------- | ------ |
+| 86.07%     | 75.04%   | 84.64%    | 87.23% |
 
 Highlights: the evidence verifier (exact match, whitespace and case normalisation, fabricated and
 partial quotes rejected, offsets), balance scoring (weights, clamping, empty, all-favourable,

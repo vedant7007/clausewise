@@ -62,7 +62,7 @@ describe("readAnalyzeInput", () => {
       { sampleId: "nda" },
       { "content-length": String(20 * 1024 * 1024) },
     );
-    expect(await codeOf(readAnalyzeInput(request))).toBe("FILE_TOO_LARGE");
+    expect(await codeOf(readAnalyzeInput(request))).toBe("PAYLOAD_TOO_LARGE");
   });
 });
 

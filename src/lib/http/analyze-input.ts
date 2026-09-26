@@ -1,5 +1,5 @@
-import { MAX_FILE_BYTES } from "@/lib/constants";
 import { AppError } from "@/lib/errors";
+import { MAX_FORM_BODY_BYTES, readFormLimited } from "./body-limit";
 import {
   DocumentTextSchema,
   type OutputOptions,
@@ -8,8 +8,6 @@ import {
   SampleIdSchema,
 } from "@/lib/schemas/document";
 
-/** Headroom for multipart boundaries and form fields around the file itself. */
-const MULTIPART_OVERHEAD_BYTES = 64 * 1024;
 const PASTED_TEXT_NAME = "Pasted text";
 const MAX_NAME_CHARS = 255;
 
@@ -29,23 +27,10 @@ export interface AnalyzeInput {
  * Reads and validates the multipart form for POST /api/analyze. Exactly one of `file`,
  * `sampleId` or `text` must be present.
  * @param request - incoming request.
- * @throws AppError FILE_TOO_LARGE or INVALID_INPUT.
+ * @throws AppError PAYLOAD_TOO_LARGE or INVALID_INPUT.
  */
 export async function readAnalyzeInput(request: Request): Promise<AnalyzeInput> {
-  const declaredLength = Number(request.headers.get("content-length") ?? 0);
-  if (declaredLength > MAX_FILE_BYTES + MULTIPART_OVERHEAD_BYTES) {
-    throw new AppError(
-      "FILE_TOO_LARGE",
-      "That file is larger than 8 MB. Please upload a smaller one.",
-    );
-  }
-
-  let form: FormData;
-  try {
-    form = await request.formData();
-  } catch {
-    throw new AppError("INVALID_INPUT", "The request must be a multipart form.");
-  }
+  const form = await readFormLimited(request, MAX_FORM_BODY_BYTES);
 
   const options = OutputOptionsSchema.safeParse({
     language: form.get("language") ?? undefined,

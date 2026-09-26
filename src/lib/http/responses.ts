@@ -1,6 +1,7 @@
 import type { z } from "zod";
 import { AppError, toAppError } from "@/lib/errors";
 import { apiRateLimiter, clientKey } from "@/lib/security/rate-limit";
+import { MAX_JSON_BODY_BYTES, readBodyLimited } from "./body-limit";
 
 const NO_STORE = { "Cache-Control": "no-store" };
 
@@ -41,12 +42,13 @@ export function rateLimitResponse(request: Request): Response | null {
  * Parses and validates a JSON request body.
  * @param request - incoming request.
  * @param schema - Zod schema for the body.
- * @throws AppError INVALID_INPUT naming the first invalid field.
+ * @throws AppError PAYLOAD_TOO_LARGE over 1.5 MB, or INVALID_INPUT naming the first invalid field.
  */
 export async function readJsonBody<T>(request: Request, schema: z.ZodType<T>): Promise<T> {
+  const raw = await readBodyLimited(request, MAX_JSON_BODY_BYTES);
   let body: unknown;
   try {
-    body = await request.json();
+    body = JSON.parse(new TextDecoder().decode(raw));
   } catch {
     throw new AppError("INVALID_INPUT", "The request body must be valid JSON.");
   }

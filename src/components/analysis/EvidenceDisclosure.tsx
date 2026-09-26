@@ -7,12 +7,14 @@ import type { Evidence } from "@/lib/schemas/evidence";
 export function EvidenceDisclosure({
   evidence,
   label = "Show source",
+  defaultOpen = false,
 }: {
   evidence: Evidence;
   label?: string;
+  defaultOpen?: boolean;
 }) {
   return (
-    <details className="group mt-3 rounded-lg border border-line bg-paper">
+    <details open={defaultOpen} className="group mt-3 rounded-lg border border-line bg-paper">
       <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 px-3 text-sm font-semibold text-accent [&::-webkit-details-marker]:hidden">
         <span aria-hidden="true" className="transition group-open:rotate-90">
           ▸

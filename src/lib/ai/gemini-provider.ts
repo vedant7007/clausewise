@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, type ThinkingConfig, ThinkingLevel } from "@google/genai";
 import { type AIProvider, type GenerateRequest, ProviderError, toProviderError } from "./provider";
 
 /** Default model when GEMINI_MODEL is unset. */
@@ -6,24 +6,30 @@ export const DEFAULT_GEMINI_MODEL = "gemini-2.5-flash";
 /** Low temperature: extraction and classification, not creative writing. */
 const TEMPERATURE = 0.2;
 /**
- * Thinking is disabled: the tasks are extraction and classification against a strict schema,
- * and hidden reasoning tokens roughly double latency without improving grounding, which the
- * evidence verifier checks independently.
+ * Thinking is kept to the minimum: the tasks are extraction and classification against a
+ * strict schema, hidden reasoning roughly doubles latency, and grounding is checked
+ * independently by the evidence verifier. Gemini 2.5 takes a token budget; later models take
+ * a level.
  */
-const THINKING_BUDGET = 0;
+function minimalThinking(model: string): ThinkingConfig {
+  return model.startsWith("gemini-2.5")
+    ? { thinkingBudget: 0 }
+    : { thinkingLevel: ThinkingLevel.MINIMAL };
+}
 
 /**
  * Google Gemini via the official SDK, using JSON mode with a response schema. Output is
  * streamed so the manager's idle timeout measures silence, not total generation time.
  */
 export class GeminiProvider implements AIProvider {
-  readonly id = "gemini";
+  readonly id: string;
   private readonly client: GoogleGenAI;
 
   constructor(
     apiKey: string,
     readonly model: string = DEFAULT_GEMINI_MODEL,
   ) {
+    this.id = `gemini:${model}`;
     this.client = new GoogleGenAI({ apiKey });
   }
 
@@ -47,7 +53,7 @@ export class GeminiProvider implements AIProvider {
           responseMimeType: "application/json",
           responseJsonSchema: jsonSchema,
           temperature: TEMPERATURE,
-          thinkingConfig: { thinkingBudget: THINKING_BUDGET },
+          thinkingConfig: minimalThinking(this.model),
           abortSignal: signal,
         },
       });

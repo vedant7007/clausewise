@@ -79,11 +79,22 @@ describe("GroqProvider", () => {
 describe("providersFromEnv", () => {
   it("orders Gemini first and Groq as fallback, using whichever keys exist", async () => {
     const { providersFromEnv } = await import("@/lib/ai");
-    expect(providersFromEnv({ GROQ_API_KEY: "g" }).map((p) => p.id)).toEqual(["groq"]);
-    expect(providersFromEnv({ GEMINI_API_KEY: "a", GROQ_API_KEY: "b" }).map((p) => p.id)).toEqual([
-      "gemini",
-      "groq",
+    expect(providersFromEnv({ GROQ_API_KEY: "g" }).map((p) => p.model)).toEqual([
+      "llama-3.3-70b-versatile",
     ]);
+    expect(
+      providersFromEnv({ GEMINI_API_KEY: "a", GROQ_API_KEY: "b" }).map((p) => p.model),
+    ).toEqual(["gemini-2.5-flash", "llama-3.3-70b-versatile"]);
     expect(providersFromEnv({})).toEqual([]);
+  });
+
+  it("adds Gemini fallback models in order, without duplicates", async () => {
+    const { providersFromEnv } = await import("@/lib/ai");
+    const env = {
+      GEMINI_API_KEY: "a",
+      GEMINI_MODEL: "m1",
+      GEMINI_FALLBACK_MODELS: " m2, m1 ,,m3 ",
+    };
+    expect(providersFromEnv(env).map((p) => p.model)).toEqual(["m1", "m2", "m3"]);
   });
 });

@@ -1,6 +1,6 @@
 import "server-only";
 import { AIManager } from "./ai-manager";
-import { GeminiProvider } from "./gemini-provider";
+import { DEFAULT_GEMINI_MODEL, GeminiProvider } from "./gemini-provider";
 import { GroqProvider } from "./groq-provider";
 import type { AIProvider } from "./provider";
 
@@ -8,12 +8,21 @@ import type { AIProvider } from "./provider";
 const HEALTH_CACHE_MS = 60_000;
 const HEALTH_TIMEOUT_MS = 5_000;
 
+/** Splits a comma-separated env value into trimmed, non-empty entries. */
+function splitList(value: string | undefined): string[] {
+  return (value ?? "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
 /** Reachability of the analysis model, as reported by the health check. */
 export type AIReachability = "reachable" | "unreachable" | "not_configured";
 
 /**
- * Builds providers from whichever keys are set. Gemini is primary when present; any second
- * configured provider becomes the fallback.
+ * Builds providers from whichever keys are set. Gemini is primary when present, followed by
+ * any GEMINI_FALLBACK_MODELS (each model has its own free-tier quota), then Groq if its key
+ * is set. Whichever provider is configured first is primary.
  * @param env - environment variables, injectable for tests.
  * @returns providers in fallback order; empty when no key is configured.
  */
@@ -21,8 +30,13 @@ export function providersFromEnv(
   env: Readonly<Record<string, string | undefined>> = process.env,
 ): AIProvider[] {
   const providers: AIProvider[] = [];
-  if (env.GEMINI_API_KEY) {
-    providers.push(new GeminiProvider(env.GEMINI_API_KEY, env.GEMINI_MODEL || undefined));
+  const geminiKey = env.GEMINI_API_KEY;
+  if (geminiKey) {
+    const models = [
+      env.GEMINI_MODEL || DEFAULT_GEMINI_MODEL,
+      ...splitList(env.GEMINI_FALLBACK_MODELS),
+    ];
+    for (const model of new Set(models)) providers.push(new GeminiProvider(geminiKey, model));
   }
   if (env.GROQ_API_KEY) {
     providers.push(new GroqProvider(env.GROQ_API_KEY, env.GROQ_MODEL || undefined));

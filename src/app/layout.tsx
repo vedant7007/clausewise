@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Public_Sans, Source_Serif_4 } from "next/font/google";
 import type { ReactNode } from "react";
 import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
+import { FirstRunNotice } from "@/components/layout/FirstRunNotice";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { SkipLink } from "@/components/layout/SkipLink";
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           </main>
         </SessionProvider>
         <Footer />
+        <FirstRunNotice />
       </body>
     </html>
   );

@@ -65,11 +65,17 @@ export const apiRateLimiter = new SlidingWindowRateLimiter(
 );
 
 /**
- * Picks a client identifier from proxy headers.
+ * Picks a client identifier. Headers set by the hosting platform are preferred because a
+ * client cannot forge them; the first X-Forwarded-For entry is client-controlled and is only
+ * a fallback for other hosts.
  * @param headers - incoming request headers.
- * @returns the first forwarded IP, the real IP, or a shared fallback bucket.
+ * @returns the platform-verified IP, the real IP, the first forwarded IP, or a shared bucket.
  */
 export function clientKey(headers: Headers): string {
-  const forwarded = headers.get("x-forwarded-for")?.split(",")[0]?.trim();
-  return forwarded || headers.get("x-real-ip")?.trim() || "anonymous";
+  const candidates = [
+    headers.get("x-vercel-forwarded-for")?.split(",")[0],
+    headers.get("x-real-ip"),
+    headers.get("x-forwarded-for")?.split(",")[0],
+  ];
+  return candidates.map((value) => value?.trim()).find(Boolean) ?? "anonymous";
 }

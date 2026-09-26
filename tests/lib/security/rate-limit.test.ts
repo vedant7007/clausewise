@@ -41,8 +41,20 @@ describe("clientKey", () => {
     expect(clientKey(new Headers({ "x-forwarded-for": "1.1.1.1, 10.0.0.1" }))).toBe("1.1.1.1");
   });
 
-  it("falls back to x-real-ip, then a shared bucket", () => {
+  it("prefers x-real-ip over x-forwarded-for, and falls back to a shared bucket", () => {
     expect(clientKey(new Headers({ "x-real-ip": "2.2.2.2" }))).toBe("2.2.2.2");
+    expect(clientKey(new Headers({ "x-real-ip": "2.2.2.2", "x-forwarded-for": "9.9.9.9" }))).toBe(
+      "2.2.2.2",
+    );
     expect(clientKey(new Headers())).toBe("anonymous");
+  });
+
+  it("prefers the platform header, which a client cannot spoof", () => {
+    const headers = new Headers({
+      "x-vercel-forwarded-for": "3.3.3.3",
+      "x-real-ip": "2.2.2.2",
+      "x-forwarded-for": "6.6.6.6, 3.3.3.3",
+    });
+    expect(clientKey(headers)).toBe("3.3.3.3");
   });
 });

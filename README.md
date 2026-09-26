@@ -161,14 +161,14 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full design.
 All calls go through [`AIManager`](src/lib/ai/ai-manager.ts), which sends a structural JSON Schema
 generated from the Zod output schema and validates every response with `safeParse`.
 
-| Provider and model                                                                                    | Role                                                                         | Feature it powers                                                                   | Files                                                                                                                            |
-| ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| Google Gemini **`gemini-2.5-flash`** (via `@google/genai`, JSON mode, streamed)                       | Primary model (`GEMINI_MODEL`)                                               | Brief, clause ledger, risks, obligations and prep pack in **one** consolidated call | [`prompts/analyze.ts`](src/lib/prompts/analyze.ts), [`services/analyze-service.ts`](src/lib/services/analyze-service.ts)         |
-| Same                                                                                                  | Primary model                                                                | Grounded Q&A                                                                        | [`prompts/ask.ts`](src/lib/prompts/ask.ts), [`services/ask-service.ts`](src/lib/services/ask-service.ts)                         |
-| Same                                                                                                  | Primary model                                                                | Compare mode and fair-baseline comparison                                           | [`prompts/compare.ts`](src/lib/prompts/compare.ts), [`services/compare-service.ts`](src/lib/services/compare-service.ts)         |
-| Same                                                                                                  | Primary model                                                                | Negotiation Kit                                                                     | [`prompts/negotiate.ts`](src/lib/prompts/negotiate.ts), [`services/negotiate-service.ts`](src/lib/services/negotiate-service.ts) |
-| Gemini **`gemini-3-flash-preview`**, **`gemini-3.1-flash-lite`**, **`gemini-flash-lite-latest`**      | Fallback chain (`GEMINI_FALLBACK_MODELS`), each with its own free-tier quota | All of the above, when the primary is out of quota or unavailable                   | [`ai/index.ts`](src/lib/ai/index.ts), [`ai/gemini-provider.ts`](src/lib/ai/gemini-provider.ts)                                   |
-| Groq, OpenAI's 120B open-weight model (set by `GROQ_MODEL`; structured outputs, low reasoning effort) | Final fallback, enabled only when `GROQ_API_KEY` is set                      | All of the above, when every Gemini model is unavailable                            | [`ai/groq-provider.ts`](src/lib/ai/groq-provider.ts)                                                                             |
+| Provider and model                                                                               | Role                                                                         | Feature it powers                                                                   | Files                                                                                                                            |
+| ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Google Gemini **`gemini-2.5-flash`** (via `@google/genai`, JSON mode, streamed)                  | Primary model (`GEMINI_MODEL`)                                               | Brief, clause ledger, risks, obligations and prep pack in **one** consolidated call | [`prompts/analyze.ts`](src/lib/prompts/analyze.ts), [`services/analyze-service.ts`](src/lib/services/analyze-service.ts)         |
+| Same                                                                                             | Primary model                                                                | Grounded Q&A                                                                        | [`prompts/ask.ts`](src/lib/prompts/ask.ts), [`services/ask-service.ts`](src/lib/services/ask-service.ts)                         |
+| Same                                                                                             | Primary model                                                                | Compare mode and fair-baseline comparison                                           | [`prompts/compare.ts`](src/lib/prompts/compare.ts), [`services/compare-service.ts`](src/lib/services/compare-service.ts)         |
+| Same                                                                                             | Primary model                                                                | Negotiation Kit                                                                     | [`prompts/negotiate.ts`](src/lib/prompts/negotiate.ts), [`services/negotiate-service.ts`](src/lib/services/negotiate-service.ts) |
+| Gemini **`gemini-3-flash-preview`**, **`gemini-3.1-flash-lite`**, **`gemini-flash-lite-latest`** | Fallback chain (`GEMINI_FALLBACK_MODELS`), each with its own free-tier quota | All of the above, when the primary is out of quota or unavailable                   | [`ai/index.ts`](src/lib/ai/index.ts), [`ai/gemini-provider.ts`](src/lib/ai/gemini-provider.ts)                                   |
+| Groq **`openai/gpt-oss-120b`** (`GROQ_MODEL`; structured outputs, `GROQ_REASONING_EFFORT=low`)   | Final fallback, enabled only when `GROQ_API_KEY` is set                      | All of the above, when every Gemini model is unavailable                            | [`ai/groq-provider.ts`](src/lib/ai/groq-provider.ts)                                                                             |
 
 The primary model was verified against the deployment key during setup: it lists as available and
 returns schema-constrained JSON. What the model **does not** do: compute the balance score, decide
@@ -183,9 +183,10 @@ accessible. ClauseWise is engineered to degrade in steps rather than fall over:
 1. **Resilient calls.** Every call has a 25 s idle timeout and a 90 s cap. Rate limits, timeouts and
    5xx errors are retried twice with exponential backoff and jitter; auth errors and spent daily
    quotas skip straight to the next provider.
-2. **Per-model Gemini fallbacks.** Gemini free-tier quotas are counted per model, so
-   `GEMINI_FALLBACK_MODELS` chains several models, each with its own allowance.
-3. **Groq as the final, independent fallback.** A different vendor on different infrastructure,
+2. **Per-model Gemini fallbacks.** The primary is `gemini-2.5-flash`. Gemini free-tier quotas are
+   counted per model, so `GEMINI_FALLBACK_MODELS` chains `gemini-3-flash-preview`,
+   `gemini-3.1-flash-lite` and `gemini-flash-lite-latest`, each with its own allowance.
+3. **Groq `openai/gpt-oss-120b` as the final, independent fallback.** A different vendor on different infrastructure,
    called with structured outputs and an explicit completion budget sized to fit its free tier.
 4. **Same standard, whoever answers.** Every provider's output passes the same Zod validation, PII
    restoration and quote verification, so a fallback answer is never less grounded.
@@ -195,8 +196,8 @@ accessible. ClauseWise is engineered to degrade in steps rather than fall over:
 Each failure and each fallback-served request is logged server-side with its provider and model,
 and never exposed to the client. **Verified on a live deployment:** with Gemini forced into a real
 quota error (HTTP 429, free-tier daily limit), a pasted employment offer was analysed live by the
-Groq fallback in 16 seconds: 12 clauses, 6 risks, 7 obligations and 25 of 27 claims verified, with
-source `live` and the server log recording `served by fallback groq:…`.
+Groq fallback (`openai/gpt-oss-120b`) in 16 seconds: 12 clauses, 6 risks, 7 obligations and 25 of 27 claims verified, with
+source `live` and the server log recording `served by fallback groq:openai/gpt-oss-120b`.
 
 ## Rubric mapping
 
@@ -233,14 +234,14 @@ npm run dev                     # http://localhost:3000
 
 ## Environment variables
 
-| Variable                 | Required            | Description                                                                                                                                                                           |
-| ------------------------ | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `GEMINI_API_KEY`         | One of the two keys | Google Gemini API key. Server-side only.                                                                                                                                              |
-| `GEMINI_MODEL`           | No                  | Primary Gemini model. Defaults to `gemini-2.5-flash`.                                                                                                                                 |
-| `GEMINI_FALLBACK_MODELS` | No                  | Comma-separated Gemini models tried in order if the primary fails, for example `gemini-3-flash-preview,gemini-3.1-flash-lite`.                                                        |
-| `GROQ_API_KEY`           | One of the two keys | Groq API key. Used as primary if it is the only key, otherwise as the last fallback.                                                                                                  |
-| `GROQ_MODEL`             | No                  | Groq model, chosen from the models the key can use. Defaults to `qwen/qwen3.8-27b`; production uses OpenAI's 120B open-weight model, which fits a full analysis within the free tier. |
-| `GROQ_REASONING_EFFORT`  | No                  | `low`, `medium` or `high` for Groq reasoning models. Production uses `low`, leaving the completion budget for the answer.                                                             |
+| Variable                 | Required            | Description                                                                                                                                                                 |
+| ------------------------ | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GEMINI_API_KEY`         | One of the two keys | Google Gemini API key. Server-side only.                                                                                                                                    |
+| `GEMINI_MODEL`           | No                  | Primary Gemini model. Defaults to `gemini-2.5-flash`.                                                                                                                       |
+| `GEMINI_FALLBACK_MODELS` | No                  | Comma-separated Gemini models tried in order if the primary fails, for example `gemini-3-flash-preview,gemini-3.1-flash-lite`.                                              |
+| `GROQ_API_KEY`           | One of the two keys | Groq API key. Used as primary if it is the only key, otherwise as the last fallback.                                                                                        |
+| `GROQ_MODEL`             | No                  | Groq model, chosen from the models the key can use. Defaults to `qwen/qwen3.8-27b`; production uses `openai/gpt-oss-120b`, which fits a full analysis within the free tier. |
+| `GROQ_REASONING_EFFORT`  | No                  | `low`, `medium` or `high` for Groq reasoning models. Production uses `low`, leaving the completion budget for the answer.                                                   |
 
 No variable is exposed to the browser; there are no `NEXT_PUBLIC_` secrets.
 
